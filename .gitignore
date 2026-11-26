@@ -1,0 +1,13 @@
+.DS_Store
+.build/
+.swiftpm/
+DerivedData/
+.derivedData/
+*.xcresult
+xcuserdata/
+Packages/
+.netrc
+
+# Published weights are downloaded, not committed.
+*.safetensors
+triposr_weights/

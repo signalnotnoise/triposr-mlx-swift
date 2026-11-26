@@ -1,0 +1,6 @@
+version: 1
+builder:
+  configs:
+    - platform: macos-xcodebuild
+      scheme: TripoSR-Package
+      documentation_targets: [TripoSRRuntime]
