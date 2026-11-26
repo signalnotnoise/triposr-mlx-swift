@@ -127,7 +127,7 @@ Clean copy, not a history rewrite. The Swift sources and the four deterministic 
 
 ## License
 
-This package is MIT, Copyright (c) 2026 Ismael Alex Otero. See [LICENSE](LICENSE).
+This package is MIT, Copyright (c) 2026 Ismael Alex Otero (signalnotnoise). See [LICENSE](LICENSE).
 
 Upstream TripoSR is MIT, Copyright (c) 2024 Tripo AI & Stability AI. The license text is copied in [LICENSES/TripoSR.txt](LICENSES/TripoSR.txt). The upstream project states that the MIT license includes the source code and the pretrained models. Attribution for TripoSR, the DINO initialization inside that checkpoint, and MLX is in [NOTICE](NOTICE).
 
