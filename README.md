@@ -112,6 +112,35 @@ xcodebuild test \
   CODE_SIGNING_ALLOWED=NO
 ```
 
+## Tested on
+
+Apple M3 Max (Mac15,11, 14 cores: 10 performance and 4 efficiency, 36 GB unified memory), macOS 27.3 (build 26C5047e), Xcode 27.0 (build 27A5252f) at `/Applications/Xcode-beta.app`. The installed Metal toolchain build was 27A5252f. `xcodebuild` resolved `mlx-swift` 0.31.4. The runs below used Debug, the default `xcodebuild` configuration. The runtime and CLI sources were commit `7655b26`.
+
+`xcodebuild test -scheme TripoSR-Package -destination 'platform=macOS'` with `TEST_RUNNER_TRIPOSR_WEIGHTS_PATH` set to the checked weights file: 6 tests in 2 suites passed in 0.773 seconds. `loadWeightsFromPublishedFileWhenPresent` passed in 0.041 seconds. `smokeExitsNonzeroWhenWeightsAreMissing` passed in 0.690 seconds. The runtime tests set the MLX default device to CPU. A shell `TRIPOSR_WEIGHTS_PATH` alone did not reach the test process; the `TEST_RUNNER_` prefix did.
+
+Weights: `triposr_swift_ready.safetensors` from [signalNotNoise/triposr-mlx](https://huggingface.co/signalNotNoise/triposr-mlx) commit `76f3028746d0b5f39b6ba0205ede9e28835f106d`, 1,674,793,528 bytes, kept outside this checkout. `shasum -a 256 -c` matched `83563625f39180f505a3ccb855e67b59b65989f6545015672465d7487c4bc2cb`.
+
+`TripoSRCLI` smoke on MLX `Device(gpu, 0)`, random 512×512 RGB, `Memory.cacheLimit` 512 MiB as the CLI sets it. `/usr/bin/time -l`: 0.75 seconds real, maximum resident set size 1,733,754,880 bytes, peak memory footprint 2,231,355,360 bytes. Printed triplanes `[1, 3, 64, 64, 40]`, density min 0.08230684 and max 2572.311, color min 0.2522956 and max 0.6929118. Metal kernels were already cached on this machine from the chair run below.
+
+Real image: [`examples/chair.png`](https://github.com/VAST-AI-Research/TripoSR/blob/e82c7a2ecf89a00a9324312ce30ec38a1f304fe9/examples/chair.png) from VAST-AI-Research/TripoSR commit `e82c7a2ecf89a00a9324312ce30ec38a1f304fe9`, git blob `fee2a21d1c9bbdf707631060f110539401265a1d`. That repository is MIT, Copyright (c) 2024 Tripo AI & Stability AI. The file is 512×512 RGBA with alpha from 0 to 255. A local harness outside this package composited it onto gray 0.5 and called `forwardTriplanes` with `[1, 512, 512, 3]` float RGB. `MTLCreateSystemDefaultDevice()` reported Apple M3 Max. MLX device was `Device(gpu, 0)`. The harness left the default MLX cache limit, which read 36,721,970,380 bytes.
+
+| Phase | Seconds |
+| --- | --- |
+| Weight load | 0.095 |
+| First forward, including Metal kernel compile in that process | 0.538 |
+| Second forward | 0.514 |
+| Density query, 128³ grid, batches of 8192 | 2.375 |
+| Marching cubes | 0.058 |
+| Vertex colors | 0.016 |
+
+The clock from the start of weight loading through vertex colors was 4.010 seconds and includes the second forward. `/usr/bin/time -l` for that process: 5.26 seconds real, maximum resident set size 1,773,879,296 bytes, peak memory footprint 3,503,343,872 bytes. MLX `Memory.peakMemory` was 2,629,506,977 bytes.
+
+Triplanes were `[1, 3, 64, 64, 40]`. Density on the grid ran from 1.271e-7 to 3516.801. 22,565 of 2,097,152 samples were at or above 25. Marching cubes at threshold 25, outside this package, produced 10,066 vertices and 20,132 faces. All vertices were finite and inside radius 0.87. The mesh had 0 invalid faces, 0 boundary edges, and 0 non-manifold edges. Vertex colors ran from 0.00431 to 0.96070.
+
+The picture is the upstream chair over white next to a local Z-up render of that mesh. The model input used gray 0.5 behind the chair. This package returns density and color. The vertex and face counts come from sampling `evaluate` and running marching cubes in the harness.
+
+![Upstream chair next to the mesh from the Metal run](docs/chair-m3-max.png)
+
 ## Limitations
 
 - No mesh extraction. The library stops at density and color.
