@@ -82,11 +82,14 @@ func loadNpzViaPythonFallback() {
 
 enum CLIError: Error, CustomStringConvertible {
     case weightsNotFound
+    case parityInputsMissing(String)
 
     var description: String {
         switch self {
         case .weightsNotFound:
             return "weights not found (set TRIPOSR_WEIGHTS_PATH or place triposr_swift_ready.safetensors in the working directory)"
+        case .parityInputsMissing(let directory):
+            return "parity inputs must be supplied at \(directory)/image.npy and \(directory)/positions.npy"
         }
     }
 }
@@ -119,9 +122,7 @@ func resolveParityDir() -> URL {
         let u = c.standardizedFileURL
         if FileManager.default.fileExists(atPath: u.path) { return u }
     }
-    let u = URL(fileURLWithPath: "parity", isDirectory: true).standardizedFileURL
-    try? FileManager.default.createDirectory(at: u, withIntermediateDirectories: true)
-    return u
+    return URL(fileURLWithPath: "parity", isDirectory: true).standardizedFileURL
 }
 
 func runParityDump() throws {
@@ -137,13 +138,10 @@ func runParityDump() throws {
     let posNpy = parityDir.appendingPathComponent("positions.npy")
     guard FileManager.default.fileExists(atPath: imageNpy.path),
           FileManager.default.fileExists(atPath: posNpy.path) else {
-        print("""
-        Missing parity inputs. Generate them first:
-
-          source .mlx_venv/bin/activate
-          python TripoSR/scripts/dump_python_parity.py
-        """)
-        return
+        throw CLIError.parityInputsMissing(parityDir.path)
+    }
+    guard let weightsPath = resolveWeights() else {
+        throw CLIError.weightsNotFound
     }
 
     let (imgShape, imgData) = try loadNpyFloat32(path: imageNpy)
@@ -152,11 +150,6 @@ func runParityDump() throws {
 
     let image = MLXArray(imgData).reshaped(imgShape)
     let positions = MLXArray(posData).reshaped(posShape)
-
-    guard let weightsPath = resolveWeights() else {
-        print("Weights not found (triposr_swift_ready.safetensors)")
-        return
-    }
     print("Weights: \(weightsPath.path)")
 
     let model = TripoSRModel()
@@ -201,7 +194,6 @@ func runParityDump() throws {
     try writeNpy(path: parityDir.appendingPathComponent("swift_color.npy"), array: color)
 
     print("Wrote swift_*.npy to \(parityDir.path)")
-    print("Next: python TripoSR/scripts/compare_parity.py")
 }
 
 func runSmoke() async throws {

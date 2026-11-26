@@ -63,7 +63,14 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Check cited paths and line ranges
         run: python3 scripts/verify_docs.py
+      - name: Re-check after a simulated squash
+        run: |
+          set -euo pipefail
+          squash="$(mktemp -d)"
+          git archive HEAD | tar -x -C "${squash}"
+          git -C "${squash}" init
+          git -C "${squash}" add -A
+          git -C "${squash}" -c user.email="ci@example.com" -c user.name="ci" commit -m "squash"
+          python3 "${squash}/scripts/verify_docs.py"

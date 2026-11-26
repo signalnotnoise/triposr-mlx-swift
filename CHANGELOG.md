@@ -30,3 +30,5 @@ version tag yet.
 - `TripoSRCLI` also searches `TRIPOSR_WEIGHTS_PATH` and
   `./triposr_swift_ready.safetensors`.
 - `TripoSRCLI` smoke exits nonzero when weights are missing or the run throws.
+- `TripoSRCLI --parity` exits nonzero when `image.npy`, `positions.npy`, or the weights are missing.
+- `scripts/verify_docs.py` checks cited ranges by content hash and does not require `verified_commit` to be an ancestor of HEAD.

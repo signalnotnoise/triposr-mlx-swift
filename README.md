@@ -57,7 +57,7 @@ let (density, color) = model.evaluate(triplanes: triplanes, positions: positions
 
 `loadWeights(from:)` reads a `.safetensors` file, checks tensor shapes, and rejects unused keys. A missing file throws.
 
-`TripoSRCLI` looks for weights in this order: `TRIPOSR_WEIGHTS_PATH`, `./triposr_swift_ready.safetensors`, `./triposr_weights/triposr_swift_ready.safetensors`, then the older monorepo relative paths. If none exist, the smoke command prints `Failed:` and exits nonzero. Any other smoke failure also exits nonzero. `--parity` additionally needs `parity/image.npy` and `parity/positions.npy`. The Python scripts that write those dumps are not in this repository. The runtime result is density and color, not a mesh.
+`TripoSRCLI` looks for weights in this order: `TRIPOSR_WEIGHTS_PATH`, `./triposr_swift_ready.safetensors`, `./triposr_weights/triposr_swift_ready.safetensors`, then the older monorepo relative paths. If none exist, the smoke command prints `Failed:` and exits nonzero. Any other smoke failure also exits nonzero. `--parity` needs `parity/image.npy` and `parity/positions.npy` (or another directory `resolveParityDir` already finds). If those files or the weights are missing, it prints `Failed:` and exits nonzero. The Python scripts that write those dumps are not in this repository. The runtime result is density and color, not a mesh.
 
 ## Weights
 
@@ -146,7 +146,7 @@ The picture is the upstream chair over white next to a local Z-up render of that
 - No mesh extraction. The library stops at density and color.
 - No Swift texture baking.
 - No background removal. Callers have to supply the image they want the model to see.
-- This repository does not re-run the Python-to-Swift parity scripts. Those scripts stayed in the source tree. The CLI still has a `--parity` mode if you already have the `.npy` inputs.
+- This repository does not re-run the Python-to-Swift parity scripts. Those scripts stayed in the source tree. `TripoSRCLI --parity` exits nonzero when `image.npy`, `positions.npy`, or the weights are missing.
 - DINO positional embeddings are resized with bilinear interpolation in `DINOv2Model`. The source notes that the Hugging Face ViT uses bicubic interpolation.
 - Real-weight inference is not part of CI. The published-file test runs only when the safetensors file is already on disk.
 

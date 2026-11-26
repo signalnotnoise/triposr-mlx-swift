@@ -15,7 +15,7 @@ Out of scope in this repository:
 - No mesh extraction and no marching cubes.
 - No Swift texture baking.
 - No background removal.
-- No Python scripts that generate `.npy` parity files. `TripoSRCLI --parity` can consume `parity/image.npy` and `parity/positions.npy` if you already have them (`Sources/TripoSRCLI/main.swift:233-240`).
+- No Python scripts that generate `.npy` parity files. `TripoSRCLI --parity` reads `parity/image.npy` and `parity/positions.npy` when they are supplied (`Sources/TripoSRCLI/main.swift:225-232`). Missing inputs or weights print `Failed:` and exit nonzero (`Sources/TripoSRCLI/main.swift:139-145`).
 
 ## Documentation index
 
@@ -42,4 +42,4 @@ Check citations with `python3 scripts/verify_docs.py`.
 
 ## Zero-drift rule
 
-A commit that adds, moves, renames, or changes files, public APIs, MLX layers, or `Package.swift` constraints must update `docs/knowledge-graph.json`, `docs/knowledge-graph.md`, and the affected `docs/wiki/*.md` pages in that same commit. Re-read the cited lines and set `metadata.verified_commit` to the commit those line numbers were checked against. `scripts/verify_docs.py` fails if cited files differ from that commit.
+A commit that adds, moves, renames, or changes files, public APIs, MLX layers, or `Package.swift` constraints must update `docs/knowledge-graph.json`, `docs/knowledge-graph.md`, and the affected `docs/wiki/*.md` pages in that same commit. Re-read the cited lines and refresh each `content_sha256`. `verified_commit` is a note only. `scripts/verify_docs.py` checks the working tree and does not require that commit to be an ancestor of HEAD.

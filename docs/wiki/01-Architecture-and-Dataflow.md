@@ -1,6 +1,6 @@
 # Architecture and dataflow
 
-Verified against `aafdeee6081dd780986479a72f34baab1a4f3c09`. Index: [knowledge-graph.md](../knowledge-graph.md). Standards: [engineering_standards.md](../engineering_standards.md).
+Ranges are checked by content hash, not by commit ancestry. Index: [knowledge-graph.md](../knowledge-graph.md). Standards: [engineering_standards.md](../engineering_standards.md).
 
 `TripoSRModel` (`Sources/TripoSRRuntime/TripoSRModel.swift:5-93`) owns the modules. `init` (`Sources/TripoSRRuntime/TripoSRModel.swift:14-41`) builds:
 
