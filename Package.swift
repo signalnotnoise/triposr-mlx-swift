@@ -40,7 +40,7 @@ let package = Package(
         ),
         .testTarget(
             name: "TripoSRRuntimeTests",
-            dependencies: ["TripoSRRuntime"]
+            dependencies: ["TripoSRRuntime", "TripoSRCLI"]
         ),
     ]
 )

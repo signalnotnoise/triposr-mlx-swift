@@ -80,6 +80,17 @@ func loadNpzViaPythonFallback() {
     // not used — we use pre-extracted npy from dump script
 }
 
+enum CLIError: Error, CustomStringConvertible {
+    case weightsNotFound
+
+    var description: String {
+        switch self {
+        case .weightsNotFound:
+            return "weights not found (set TRIPOSR_WEIGHTS_PATH or place triposr_swift_ready.safetensors in the working directory)"
+        }
+    }
+}
+
 func resolveWeights() -> URL? {
     var candidates: [URL] = []
     if let path = ProcessInfo.processInfo.environment["TRIPOSR_WEIGHTS_PATH"], !path.isEmpty {
@@ -194,14 +205,13 @@ func runParityDump() throws {
 }
 
 func runSmoke() async throws {
+    guard let weightsPath = resolveWeights() else {
+        throw CLIError.weightsNotFound
+    }
     Memory.cacheLimit = 512 * 1024 * 1024
     print("Initializing TripoSR MLX Pipeline (smoke)...")
     let model = TripoSRModel()
     MLX.eval(model.parameters())
-    guard let weightsPath = resolveWeights() else {
-        print("Failed: weights not found (set TRIPOSR_WEIGHTS_PATH or place triposr_swift_ready.safetensors in the working directory)")
-        return
-    }
     print("Loading weights from: \(weightsPath.path)")
     try model.loadWeights(from: weightsPath)
     print("Weights loaded successfully!")
@@ -232,6 +242,7 @@ func main() async throws {
 do {
     try await main()
 } catch {
-    print("Fatal Error: \(error)")
+    let message = "Failed: \(error)\n"
+    FileHandle.standardError.write(Data(message.utf8))
     exit(1)
 }
