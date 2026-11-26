@@ -1,6 +1,6 @@
 # Build, CI, and testing
 
-Verified against `aafdeee6081dd780986479a72f34baab1a4f3c09`. Router: [AGENTS.md](../../AGENTS.md).
+Ranges are checked by content hash, not by commit ancestry. Router: [AGENTS.md](../../AGENTS.md).
 
 ## Package pin
 
@@ -21,7 +21,7 @@ The same commands are in `README.md:100-113`. CI uses them with an explicit deri
 
 ## CI
 
-The Metal job is named `macOS build and test` and runs on `macos-26` (`.github/workflows/ci.yml:16-18`). That job, through `.github/workflows/ci.yml:58`, shows Xcode and Swift, ensures the Metal toolchain, lists schemes, builds `TripoSRCLI`, then tests `TripoSR-Package`. A later Ubuntu job in the same file runs `python3 scripts/verify_docs.py`. Those added lines are not part of verified commit `aafdeee6081dd780986479a72f34baab1a4f3c09`.
+The Metal job is named `macOS build and test` and runs on `macos-26` (`.github/workflows/ci.yml:16-18`). That job, through `.github/workflows/ci.yml:58`, shows Xcode and Swift, ensures the Metal toolchain, lists schemes, builds `TripoSRCLI`, then tests `TripoSR-Package`. A later Ubuntu job runs `python3 scripts/verify_docs.py`, then copies the tree into a fresh one-commit repository and runs the verifier again so a squash merge cannot revive an ancestry check.
 
 A separate Ubuntu job runs `python3 scripts/verify_docs.py`. That check does not compile MLX.
 

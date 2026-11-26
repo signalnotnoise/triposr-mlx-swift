@@ -1,13 +1,13 @@
 # Memory and performance
 
-Verified against `aafdeee6081dd780986479a72f34baab1a4f3c09`. The numbers below are copied from the README record of one M3 Max run. This page does not re-measure them.
+The numbers below are copied from the README record of one M3 Max run. This page does not re-measure them. Range checks use content hashes, not commit ancestry.
 
 ## Cache limit in this repository
 
 | Call site | Limit | Lines |
 | --- | --- | --- |
-| `runSmoke` | `512 * 1024 * 1024` (512 MiB) | `Sources/TripoSRCLI/main.swift:211` |
-| `runParityDump` | `256 * 1024 * 1024` (256 MiB) | `Sources/TripoSRCLI/main.swift:130` |
+| `runSmoke` | `512 * 1024 * 1024` (512 MiB) | `Sources/TripoSRCLI/main.swift:203` |
+| `runParityDump` | `256 * 1024 * 1024` (256 MiB) | `Sources/TripoSRCLI/main.swift:131` |
 | Library modules | not set | `Sources/TripoSRRuntime/TripoSRModel.swift:14-41` |
 
 The 512 MiB value is the smoke command only. `--parity` uses 256 MiB.

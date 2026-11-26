@@ -2,7 +2,7 @@
 
 Human index for [knowledge-graph.json](knowledge-graph.json).
 
-Verified commit: `aafdeee6081dd780986479a72f34baab1a4f3c09` on `cursor/triposr-mlx-swift-package-45c1`. Those line numbers were read from that commit. This page does not change Swift sources. If `Sources/`, `Tests/`, `Package.swift`, `.github/workflows/ci.yml`, `.gitignore`, or `README.md` change, update the JSON and this page in the same commit. Standards: [engineering_standards.md](engineering_standards.md). Router: [AGENTS.md](../AGENTS.md).
+`verified_commit` in [knowledge-graph.json](knowledge-graph.json) is informational. The checker hashes each cited range in the working tree and does not require that commit to be an ancestor of HEAD. If a cited range changes, update its lines, its `content_sha256`, and this page in the same commit. Standards: [engineering_standards.md](engineering_standards.md). Router: [AGENTS.md](../AGENTS.md).
 
 No `actor` or `protocol` types are declared under `Sources/` or `Tests/`.
 
@@ -24,7 +24,7 @@ flowchart TD
   tok --> lrm --> detok --> up --> qry --> mlp --> out
 ```
 
-`forwardTriplanes` is `Sources/TripoSRRuntime/TripoSRModel.swift:67-87`. `evaluate` is `Sources/TripoSRRuntime/TripoSRModel.swift:90-92`. The CLI smoke batch is 1 (`Sources/TripoSRCLI/main.swift:219`).
+`forwardTriplanes` is `Sources/TripoSRRuntime/TripoSRModel.swift:67-87`. `evaluate` is `Sources/TripoSRRuntime/TripoSRModel.swift:90-92`. The CLI smoke batch is 1 (`Sources/TripoSRCLI/main.swift:211`).
 
 ## Where to find things
 
@@ -36,10 +36,10 @@ flowchart TD
 | Image to triplanes | `Sources/TripoSRRuntime/TripoSRModel.swift:67-87` |
 | Triplane sample | `Sources/TripoSRRuntime/TripoSRRenderer.swift:84-126` |
 | NeRF MLP | `Sources/TripoSRRuntime/NeRFMLP.swift:5-39` |
-| CLI entry and `--parity` | `Sources/TripoSRCLI/main.swift:233-247` |
-| Weight search order | `Sources/TripoSRCLI/main.swift:94-109` |
-| Parity dump, including the exit-0 early returns | `Sources/TripoSRCLI/main.swift:127-205` |
-| Smoke, 512 MiB cache, nonzero missing-weights exit | `Sources/TripoSRCLI/main.swift:207-231` |
+| CLI entry and `--parity` | `Sources/TripoSRCLI/main.swift:225-240` |
+| Weight search order | `Sources/TripoSRCLI/main.swift:97-112` |
+| Parity dump; missing npy or weights throw | `Sources/TripoSRCLI/main.swift:128-197` |
+| Smoke, 512 MiB cache, nonzero missing-weights exit | `Sources/TripoSRCLI/main.swift:199-223` |
 | Published-weights test, load only | `Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift:108-118` |
 | Env var the test actually reads | `Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift:9-26` |
 | CLI nonzero-exit test | `Tests/TripoSRRuntimeTests/TripoSRCLIExitTests.swift:34-86` |

@@ -30,58 +30,104 @@ func builtTripoSRCLI() -> URL? {
     return nil
 }
 
+func runTripoSRCLI(
+    arguments: [String],
+    workingDirectory: URL,
+    outputDirectory: URL
+) throws -> (status: Int32, reason: Process.TerminationReason, output: String) {
+    var imageInfo = Dl_info()
+    let imagePath: String
+    if dladdr(#dsohandle, &imageInfo) != 0, let fileName = imageInfo.dli_fname {
+        imagePath = String(cString: fileName)
+    } else {
+        imagePath = "unknown"
+    }
+    let cli = try #require(
+        builtTripoSRCLI(),
+        "TripoSRCLI was not found above the test image at \(imagePath)"
+    )
+    let outputURL = outputDirectory.appendingPathComponent("stdout.txt")
+    let errorURL = outputDirectory.appendingPathComponent("stderr.txt")
+    FileManager.default.createFile(atPath: outputURL.path, contents: nil)
+    FileManager.default.createFile(atPath: errorURL.path, contents: nil)
+    let outputHandle = try FileHandle(forWritingTo: outputURL)
+    let errorHandle = try FileHandle(forWritingTo: errorURL)
+    defer {
+        try? outputHandle.close()
+        try? errorHandle.close()
+    }
+    var environment = ProcessInfo.processInfo.environment
+    environment.removeValue(forKey: "TRIPOSR_WEIGHTS_PATH")
+    let process = Process()
+    process.executableURL = cli
+    process.arguments = arguments
+    process.currentDirectoryURL = workingDirectory
+    process.environment = environment
+    process.standardOutput = outputHandle
+    process.standardError = errorHandle
+    try process.run()
+    process.waitUntilExit()
+    let stdout = (try? String(contentsOf: outputURL, encoding: .utf8)) ?? ""
+    let stderr = (try? String(contentsOf: errorURL, encoding: .utf8)) ?? ""
+    return (process.terminationStatus, process.terminationReason, stdout + stderr)
+}
+
+func makeEmptyCLIWorkspace() throws -> (root: URL, workingDirectory: URL) {
+    let root = FileManager.default.temporaryDirectory
+        .appendingPathComponent("triposr-cli-exit-\(UUID().uuidString)", isDirectory: true)
+    let workingDirectory = root
+        .appendingPathComponent("empty", isDirectory: true)
+        .appendingPathComponent("cwd", isDirectory: true)
+    try FileManager.default.createDirectory(
+        at: workingDirectory, withIntermediateDirectories: true)
+    return (root, workingDirectory)
+}
+
 struct TripoSRCLIExitTests {
     @Test func smokeExitsNonzeroWhenWeightsAreMissing() throws {
-        var imageInfo = Dl_info()
-        let imagePath: String
-        if dladdr(#dsohandle, &imageInfo) != 0, let fileName = imageInfo.dli_fname {
-            imagePath = String(cString: fileName)
-        } else {
-            imagePath = "unknown"
-        }
-        let cli = try #require(
-            builtTripoSRCLI(),
-            "TripoSRCLI was not found above the test image at \(imagePath)"
+        let workspace = try makeEmptyCLIWorkspace()
+        defer { try? FileManager.default.removeItem(at: workspace.root) }
+        let result = try runTripoSRCLI(
+            arguments: [],
+            workingDirectory: workspace.workingDirectory,
+            outputDirectory: workspace.root
         )
+        #expect(result.reason == .exit)
+        #expect(result.status != 0)
+        #expect(result.output.contains("Failed:"))
+    }
 
-        let root = FileManager.default.temporaryDirectory
-            .appendingPathComponent("triposr-cli-exit-\(UUID().uuidString)", isDirectory: true)
-        let workingDirectory = root
-            .appendingPathComponent("empty", isDirectory: true)
-            .appendingPathComponent("cwd", isDirectory: true)
-        try FileManager.default.createDirectory(
-            at: workingDirectory, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: root) }
+    @Test func parityExitsNonzeroWhenInputsAreMissing() throws {
+        let workspace = try makeEmptyCLIWorkspace()
+        defer { try? FileManager.default.removeItem(at: workspace.root) }
+        let result = try runTripoSRCLI(
+            arguments: ["--parity"],
+            workingDirectory: workspace.workingDirectory,
+            outputDirectory: workspace.root
+        )
+        #expect(result.reason == .exit)
+        #expect(result.status != 0)
+        #expect(result.output.contains("Failed:"))
+        #expect(result.output.contains("parity inputs must be supplied"))
+    }
 
-        let outputURL = root.appendingPathComponent("stdout.txt")
-        let errorURL = root.appendingPathComponent("stderr.txt")
-        FileManager.default.createFile(atPath: outputURL.path, contents: nil)
-        FileManager.default.createFile(atPath: errorURL.path, contents: nil)
-        let outputHandle = try FileHandle(forWritingTo: outputURL)
-        let errorHandle = try FileHandle(forWritingTo: errorURL)
-        defer {
-            try? outputHandle.close()
-            try? errorHandle.close()
-        }
-
-        var environment = ProcessInfo.processInfo.environment
-        environment.removeValue(forKey: "TRIPOSR_WEIGHTS_PATH")
-
-        let process = Process()
-        process.executableURL = cli
-        process.currentDirectoryURL = workingDirectory
-        process.environment = environment
-        process.standardOutput = outputHandle
-        process.standardError = errorHandle
-        try process.run()
-        process.waitUntilExit()
-
-        let output = (try? String(contentsOf: outputURL, encoding: .utf8)) ?? ""
-        let errorOutput = (try? String(contentsOf: errorURL, encoding: .utf8)) ?? ""
-        let combined = output + errorOutput
-
-        #expect(process.terminationReason == .exit)
-        #expect(process.terminationStatus != 0)
-        #expect(combined.contains("Failed:"))
+    @Test func parityExitsNonzeroWhenWeightsAreMissing() throws {
+        let workspace = try makeEmptyCLIWorkspace()
+        defer { try? FileManager.default.removeItem(at: workspace.root) }
+        let parity = workspace.workingDirectory.appendingPathComponent("parity", isDirectory: true)
+        try FileManager.default.createDirectory(at: parity, withIntermediateDirectories: true)
+        FileManager.default.createFile(
+            atPath: parity.appendingPathComponent("image.npy").path, contents: Data())
+        FileManager.default.createFile(
+            atPath: parity.appendingPathComponent("positions.npy").path, contents: Data())
+        let result = try runTripoSRCLI(
+            arguments: ["--parity"],
+            workingDirectory: workspace.workingDirectory,
+            outputDirectory: workspace.root
+        )
+        #expect(result.reason == .exit)
+        #expect(result.status != 0)
+        #expect(result.output.contains("Failed:"))
+        #expect(result.output.contains("weights not found"))
     }
 }

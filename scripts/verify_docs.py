@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Check docs citations against the working tree and verified_commit.
+"""Check docs citations against the working tree.
 
-Line numbers in the docs were read from metadata.verified_commit. This script
-fails when a cited file, line range, or anchor does not match the working tree,
-when a relative Markdown link is broken, or when a cited source file differs
-from that commit.
+verified_commit is informational metadata. This script does not resolve it
+and does not require it to be an ancestor of HEAD, so a squash or rebase
+merge still passes. Each knowledge-graph range is locked by content_sha256
+of those exact lines. Markdown citations must fall inside a locked range.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
-import subprocess
 import sys
 from pathlib import Path
 
@@ -65,11 +65,17 @@ def load_graph() -> dict:
     return json.loads(GRAPH.read_text(encoding="utf-8"))
 
 
-def check_graph(doc: dict, errors: list[str], cited: set[str]) -> str:
+def content_sha256(lines: list[str]) -> str:
+    payload = ("\n".join(lines) + "\n").encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def check_graph(doc: dict, errors: list[str], cited: set[str]) -> list[dict]:
     meta = doc["metadata"]
-    commit = meta["verified_commit"]
-    if not re.fullmatch(r"[0-9a-f]{40}", commit):
+    commit = meta.get("verified_commit", "")
+    if commit and not re.fullmatch(r"[0-9a-f]{40}", commit):
         errors.append(f"metadata.verified_commit is not a 40-character sha: {commit}")
+    locks: list[dict] = []
     for key, value in doc["location_index"].items():
         for loc in iter_locations(value):
             cited.add(loc["file_path"])
@@ -81,6 +87,8 @@ def check_graph(doc: dict, errors: list[str], cited: set[str]) -> str:
                 f"location_index.{key}",
                 errors,
             )
+            check_hash(loc, f"location_index.{key}", errors)
+            locks.append(loc)
     for node in doc["nodes"]:
         cited.add(node["file_path"])
         check_span(
@@ -91,10 +99,40 @@ def check_graph(doc: dict, errors: list[str], cited: set[str]) -> str:
             f"node.{node['id']}",
             errors,
         )
-    return commit
+        check_hash(node, f"node.{node['id']}", errors)
+        locks.append(node)
+    return locks
 
 
-def check_markdown(errors: list[str], cited: set[str]) -> None:
+def check_hash(entry: dict, label: str, errors: list[str]) -> None:
+    expected = entry.get("content_sha256")
+    if not expected:
+        errors.append(f"{label}: missing content_sha256")
+        return
+    lines = read_lines(entry["file_path"])
+    if lines is None:
+        return
+    start, end = entry["line_start"], entry["line_end"]
+    if start < 1 or end < start or end > len(lines):
+        return
+    actual = content_sha256(lines[start - 1 : end])
+    if actual != expected:
+        errors.append(
+            f"{label}: {entry['file_path']}:{start}-{end} content_sha256 "
+            f"is {actual}, expected {expected}"
+        )
+
+
+def citation_is_locked(rel: str, start: int, end: int, locks: list[dict]) -> bool:
+    return any(
+        lock["file_path"] == rel
+        and lock["line_start"] <= start
+        and lock["line_end"] >= end
+        for lock in locks
+    )
+
+
+def check_markdown(errors: list[str], cited: set[str], locks: list[dict]) -> None:
     for path in MARKDOWN:
         if not path.is_file():
             errors.append(f"missing markdown file {path.relative_to(ROOT)}")
@@ -116,6 +154,10 @@ def check_markdown(errors: list[str], cited: set[str]) -> None:
             end = int(end_s) if end_s else start
             cited.add(rel)
             check_span(rel, start, end, None, f"{rel_md}", errors)
+            if not citation_is_locked(rel, start, end, locks):
+                errors.append(
+                    f"{rel_md}: {rel}:{start}-{end} is not inside a content-hashed range"
+                )
         for match in LINK.finditer(text):
             target = match.group(1).strip()
             if target.startswith(("http://", "https://", "mailto:")):
@@ -133,64 +175,6 @@ def check_markdown(errors: list[str], cited: set[str]) -> None:
                 errors.append(f"{rel_md}: broken link {target}")
 
 
-def collect_spans(doc: dict) -> dict[str, list[tuple[int, int]]]:
-    spans: dict[str, list[tuple[int, int]]] = {}
-
-    def add(rel: str, start: int, end: int) -> None:
-        spans.setdefault(rel, []).append((start, end))
-
-    for value in doc["location_index"].values():
-        for loc in iter_locations(value):
-            add(loc["file_path"], loc["line_start"], loc["line_end"])
-    for node in doc["nodes"]:
-        add(node["file_path"], node["line_start"], node["line_end"])
-    return spans
-
-
-def check_commit(commit: str, doc: dict, errors: list[str]) -> None:
-    present = subprocess.run(
-        ["git", "cat-file", "-e", f"{commit}^{{commit}}"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-    )
-    if present.returncode != 0:
-        errors.append(
-            f"verified_commit {commit} is not in this checkout. "
-            "Fetch enough history (actions/checkout fetch-depth: 0) and retry."
-        )
-        return
-    ancestor = subprocess.run(
-        ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
-        cwd=ROOT,
-    )
-    if ancestor.returncode != 0:
-        errors.append(f"verified_commit {commit} is not an ancestor of HEAD")
-        return
-    for rel, spans in collect_spans(doc).items():
-        show = subprocess.run(
-            ["git", "show", f"{commit}:{rel}"],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-        )
-        if show.returncode != 0:
-            errors.append(f"{rel} is not in verified_commit {commit}")
-            continue
-        old = show.stdout.splitlines()
-        new = read_lines(rel)
-        if new is None:
-            continue
-        for start, end in spans:
-            old_slice = old[start - 1 : end]
-            new_slice = new[start - 1 : end]
-            if old_slice != new_slice:
-                errors.append(
-                    f"{rel}:{start}-{end} differs from verified_commit {commit}. "
-                    "Re-read those lines and update metadata.verified_commit."
-                )
-
-
 def main() -> int:
     errors: list[str] = []
     if not GRAPH.is_file():
@@ -198,19 +182,14 @@ def main() -> int:
         return 1
     cited: set[str] = set()
     doc = load_graph()
-    commit = check_graph(doc, errors, cited)
-    check_markdown(errors, cited)
-    if commit:
-        check_commit(commit, doc, errors)
+    locks = check_graph(doc, errors, cited)
+    check_markdown(errors, cited, locks)
     if errors:
         print(f"{len(errors)} documentation check(s) failed:", file=sys.stderr)
         for error in errors:
             print(f"- {error}", file=sys.stderr)
         return 1
-    print(
-        f"docs citations match the working tree and verified_commit {commit} "
-        f"({len(cited)} files)"
-    )
+    print(f"docs citations match the working tree by content hash ({len(cited)} files)")
     return 0
 
 
