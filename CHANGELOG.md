@@ -26,3 +26,4 @@ version tag yet.
   `mlx-swift` 0.31.5 and later require Swift tools 6.3.
 - `TripoSRCLI` also searches `TRIPOSR_WEIGHTS_PATH` and
   `./triposr_swift_ready.safetensors`.
+- `TripoSRCLI` smoke exits nonzero when weights are missing or the run throws.

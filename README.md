@@ -57,7 +57,7 @@ let (density, color) = model.evaluate(triplanes: triplanes, positions: positions
 
 `loadWeights(from:)` reads a `.safetensors` file, checks tensor shapes, and rejects unused keys. A missing file throws.
 
-`TripoSRCLI` looks for weights in this order: `TRIPOSR_WEIGHTS_PATH`, `./triposr_swift_ready.safetensors`, `./triposr_weights/triposr_swift_ready.safetensors`, then the older monorepo relative paths. If none exist, the smoke command prints a message and exits 0. `--parity` additionally needs `parity/image.npy` and `parity/positions.npy`. The Python scripts that write those dumps are not in this repository.
+`TripoSRCLI` looks for weights in this order: `TRIPOSR_WEIGHTS_PATH`, `./triposr_swift_ready.safetensors`, `./triposr_weights/triposr_swift_ready.safetensors`, then the older monorepo relative paths. If none exist, the smoke command prints `Failed:` and exits nonzero. Any other smoke failure also exits nonzero. `--parity` additionally needs `parity/image.npy` and `parity/positions.npy`. The Python scripts that write those dumps are not in this repository. The runtime result is density and color, not a mesh.
 
 ## Weights
 
@@ -85,7 +85,7 @@ grep 'triposr_swift_ready.safetensors$' checksums.sha256 | shasum -a 256 -c -
 
 `shasum -a 256 -c` exits non-zero when the digest does not match. Do not load a file that fails the check.
 
-To run the optional weight test, point `TRIPOSR_WEIGHTS_PATH` at the verified file. If that variable is unset and the file is not in the working directory, the test is skipped.
+To run the optional weight test, point `TRIPOSR_WEIGHTS_PATH` at the verified file. That test only calls `loadWeights(from:)` and does not run a forward pass. If that variable is unset and the file is not in the working directory, the test is skipped. `TripoSRRuntime` outputs density and color. It does not output a mesh.
 
 ## Platforms
 

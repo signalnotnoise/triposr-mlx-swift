@@ -103,6 +103,7 @@ struct TripoSRRuntimeTests {
 
     /// Loads https://huggingface.co/signalNotNoise/triposr-mlx
     /// `triposr_swift_ready.safetensors` when a local copy is present.
+    /// This only calls `loadWeights(from:)`. It does not run a forward pass.
     /// Absent file: skipped, not failed.
     @Test(
         .enabled(
