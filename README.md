@@ -36,7 +36,7 @@ Products:
 | `TripoSRRuntime` | Library. Import this. |
 | `TripoSRCLI` | Executable. Smoke forward pass and optional parity dump. |
 
-`mlx-swift` is pinned to `0.31.3..<0.31.5` (see `Package.swift`). Release `0.31.5` and later require Swift tools 6.3. This package's manifest is Swift tools 6.2.
+`mlx-swift` is capped at `0.31.3..<0.31.5` in `Package.swift`. The source package's lockfile selected `0.31.3`, and `0.31.4` is the last release that still builds with this manifest. Starting with `0.31.5`, `mlx-swift` sets `swift-tools-version` to 6.3. This package stays on Swift tools 6.2, so the range stops before `0.31.5` and SwiftPM will not select a dependency this manifest cannot resolve.
 
 ## Usage
 
