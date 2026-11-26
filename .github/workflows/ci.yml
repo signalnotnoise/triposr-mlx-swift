@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  macos:
+    name: macOS build and test
+    runs-on: macos-26
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show Xcode and Swift
+        run: |
+          set -euo pipefail
+          xcode-select -p
+          xcodebuild -version
+          swift --version
+
+      - name: Ensure Metal toolchain
+        run: |
+          set -euo pipefail
+          if ! xcodebuild -showComponent MetalToolchain; then
+            echo "Metal toolchain is not installed. Downloading it."
+            xcodebuild -downloadComponent MetalToolchain
+            xcodebuild -showComponent MetalToolchain
+          fi
+
+      - name: List schemes
+        run: xcodebuild -list
+
+      - name: Build CLI and test
+        run: |
+          set -euo pipefail
+          derived="${RUNNER_TEMP}/DerivedData"
+          xcodebuild build \
+            -scheme TripoSRCLI \
+            -destination 'platform=macOS' \
+            -skipPackagePluginValidation \
+            -derivedDataPath "${derived}" \
+            CODE_SIGNING_ALLOWED=NO
+          xcodebuild test \
+            -scheme TripoSR-Package \
+            -destination 'platform=macOS' \
+            -skipPackagePluginValidation \
+            -parallel-testing-enabled NO \
+            -derivedDataPath "${derived}" \
+            CODE_SIGNING_ALLOWED=NO

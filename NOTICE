@@ -1,0 +1,42 @@
+TripoSR MLX Swift runtime
+Copyright (c) 2026 Ismael Alex Otero
+Licensed under the MIT License; see LICENSE.
+
+This repository is an independent Swift port of the TripoSR image-to-3D
+model onto Apple's MLX. It is not affiliated with or endorsed by Tripo AI,
+Stability AI, Meta AI, or Apple.
+
+Third-party software and models this package builds on:
+
+1. TripoSR (Tripo AI & Stability AI / VAST-AI-Research)
+   https://github.com/VAST-AI-Research/TripoSR
+   https://huggingface.co/stabilityai/TripoSR
+   MIT License, Copyright (c) 2024 Tripo AI & Stability AI.
+   The upstream release states the MIT license includes the source code
+   and the pretrained models. License text: LICENSES/TripoSR.txt.
+   The Swift sources in this repository were copied from the TripoSR
+   submodule of https://github.com/signalnotnoise/apple-mlx-foundations
+   (submodule commit 6da4a3cd3f8454f7c98607249476a26c836509ee).
+
+2. DINO ViT-B/16 image tokenizer (Meta AI)
+   https://huggingface.co/facebook/dino-vitb16
+   The TripoSR configuration initializes its image tokenizer from
+   facebook/dino-vitb16. Those parameters ship inside the upstream TripoSR
+   checkpoint and inside the converted file
+   triposr_swift_ready.safetensors. They are not included in this
+   repository.
+
+3. MLX and mlx-swift (Apple)
+   https://github.com/ml-explore/mlx
+   https://github.com/ml-explore/mlx-swift
+   MIT License, Copyright (c) 2023 Apple Inc.
+   Used as a Swift package dependency. Not vendored.
+
+Model weights:
+No pretrained weights are included in this repository. The Swift loader
+accepts triposr_swift_ready.safetensors published at
+https://huggingface.co/signalNotNoise/triposr-mlx
+(revision 76f3028746d0b5f39b6ba0205ede9e28835f106d when this package was
+extracted). That file is a format and layout conversion of the upstream
+checkpoint, not a separately trained model. Verify it with the checksum
+in README.md before use.
