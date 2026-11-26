@@ -1,0 +1,934 @@
+{
+  "metadata": {
+    "repo": "signalnotnoise/triposr-mlx-swift",
+    "branch": "cursor/triposr-mlx-swift-package-45c1",
+    "verified_commit": "aafdeee6081dd780986479a72f34baab1a4f3c09",
+    "verified_commit_meaning": "Line numbers were read from this commit. The documentation commit that adds this file does not modify Sources, Tests, Package.swift, .github/workflows/ci.yml, .gitignore, or README.md, so those cited lines stay on this commit. If any of those files change, re-read the lines and update verified_commit in the same commit.",
+    "generated_at": "2026-11-26",
+    "swift_tools_version": "6.2",
+    "mlx_swift_constraint": "0.31.3..<0.31.5",
+    "actor_count": 0,
+    "protocol_count": 0,
+    "mismatches_with_requested_wording": [
+      "8192-point batches and a 128^3 grid are not implemented in Sources or Tests. They are recorded only in README.md:131-138 as a harness outside this package.",
+      "Memory.cacheLimit of 512 MiB is runSmoke only (main.swift:211). runParityDump uses 256 MiB (main.swift:130).",
+      "Default triplanes are [B, 3, 64, 64, 40]. The leading 1 is the smoke batch, not a fixed batch size.",
+      "forwardTriplanes skips ImageNet normalization when alreadyNormalized is true (TripoSRModel.swift:67-69).",
+      "No safetensors key-mapping table is in this repository. loadWeights checks shapes and unused keys only.",
+      "interpolatePosEmbed is bilinear. The comment at DINOv2Model.swift:66 says bicubic-ish bilinear. README.md:150 is what says the Hugging Face ViT uses bicubic.",
+      "Tests read TRIPOSR_WEIGHTS_PATH. TEST_RUNNER_TRIPOSR_WEIGHTS_PATH is the xcodebuild prefix recorded in README.md:119, not a string the test looks up.",
+      "--parity returns without throwing, exit 0, when npy inputs or weights are missing (main.swift:138-146 and 156-158). Smoke missing weights exits 1."
+    ]
+  },
+  "location_index": {
+    "weight_loading_and_validation": {
+      "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
+      "line_start": 44,
+      "line_end": 51,
+      "anchor": "func loadWeights",
+      "note": "verify shapeMismatch and noUnusedKeys"
+    },
+    "image_preprocessing_and_normalization": {
+      "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
+      "line_start": 53,
+      "line_end": 62,
+      "anchor": "imageNetMean",
+      "note": "mean and std plus preprocessImage"
+    },
+    "dinov2_backbone_and_pos_embedding_interpolation": {
+      "file_path": "Sources/TripoSRRuntime/DINOv2Model.swift",
+      "line_start": 36,
+      "line_end": 129,
+      "anchor": "func callAsFunction",
+      "note": "forward plus bilinear interpolatePosEmbed"
+    },
+    "image_to_triplane_decoder": {
+      "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
+      "line_start": 67,
+      "line_end": 87,
+      "anchor": "func forwardTriplanes",
+      "note": "DINO, tokens, LRM, detokenize, upsample. Not the NeRF MLP."
+    },
+    "triplane_sampling_and_nerf_mlp": {
+      "locations": [
+        {
+          "file_path": "Sources/TripoSRRuntime/TripoSRRenderer.swift",
+          "line_start": 84,
+          "line_end": 126,
+          "anchor": "func queryTriplane"
+        },
+        {
+          "file_path": "Sources/TripoSRRuntime/NeRFMLP.swift",
+          "line_start": 5,
+          "line_end": 39,
+          "anchor": "class NeRFMLP"
+        }
+      ]
+    },
+    "cli_entrypoint_and_parity_mode": {
+      "locations": [
+        {
+          "file_path": "Sources/TripoSRCLI/main.swift",
+          "line_start": 233,
+          "line_end": 247,
+          "anchor": "func main",
+          "note": "--parity branch and nonzero catch"
+        },
+        {
+          "file_path": "Sources/TripoSRCLI/main.swift",
+          "line_start": 94,
+          "line_end": 109,
+          "anchor": "func resolveWeights"
+        },
+        {
+          "file_path": "Sources/TripoSRCLI/main.swift",
+          "line_start": 127,
+          "line_end": 205,
+          "anchor": "func runParityDump"
+        }
+      ]
+    },
+    "unit_tests_and_weight_test_harness": {
+      "locations": [
+        {
+          "file_path": "Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift",
+          "line_start": 9,
+          "line_end": 26,
+          "anchor": "TRIPOSR_WEIGHTS_PATH"
+        },
+        {
+          "file_path": "Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift",
+          "line_start": 108,
+          "line_end": 118,
+          "anchor": "@Test("
+        },
+        {
+          "file_path": "Tests/TripoSRRuntimeTests/TripoSRCLIExitTests.swift",
+          "line_start": 34,
+          "line_end": 86,
+          "anchor": "func smokeExitsNonzeroWhenWeightsAreMissing"
+        }
+      ]
+    },
+    "ci_pipeline_and_package_manifest": {
+      "locations": [
+        {
+          "file_path": ".github/workflows/ci.yml",
+          "line_start": 16,
+          "line_end": 58,
+          "anchor": "runs-on: macos-26"
+        },
+        {
+          "file_path": "Package.swift",
+          "line_start": 1,
+          "line_end": 46,
+          "anchor": "swift-tools-version: 6.2"
+        }
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "target.TripoSRRuntime",
+      "kind": "target",
+      "target": "TripoSRRuntime",
+      "file_path": "Package.swift",
+      "line_start": 30,
+      "line_end": 36,
+      "summary": "Library target. Depends on MLX and MLXNN.",
+      "anchor": "name: \"TripoSRRuntime\""
+    },
+    {
+      "id": "target.TripoSRCLI",
+      "kind": "target",
+      "target": "TripoSRCLI",
+      "file_path": "Package.swift",
+      "line_start": 37,
+      "line_end": 40,
+      "summary": "Executable target. Depends on TripoSRRuntime.",
+      "anchor": "name: \"TripoSRCLI\""
+    },
+    {
+      "id": "target.TripoSRRuntimeTests",
+      "kind": "target",
+      "target": "TripoSRRuntimeTests",
+      "file_path": "Package.swift",
+      "line_start": 41,
+      "line_end": 44,
+      "summary": "Test target. Depends on TripoSRRuntime and TripoSRCLI.",
+      "anchor": "name: \"TripoSRRuntimeTests\""
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/TripoSRRuntime.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/TripoSRRuntime.swift",
+      "line_start": 1,
+      "line_end": 2,
+      "summary": "Source file, 2 lines at verified_commit.",
+      "anchor": "// The Swift Programming Language"
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/TripoSRModel.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
+      "line_start": 1,
+      "line_end": 93,
+      "summary": "Source file, 93 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/DINOv2Model.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/DINOv2Model.swift",
+      "line_start": 1,
+      "line_end": 130,
+      "summary": "Source file, 130 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/DINOv2Attention.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/DINOv2Attention.swift",
+      "line_start": 1,
+      "line_end": 54,
+      "summary": "Source file, 54 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/DINOv2Layer.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/DINOv2Layer.swift",
+      "line_start": 1,
+      "line_end": 48,
+      "summary": "Source file, 48 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/DINOv2MLP.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/DINOv2MLP.swift",
+      "line_start": 1,
+      "line_end": 20,
+      "summary": "Source file, 20 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/DINOv2PatchEmbed.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/DINOv2PatchEmbed.swift",
+      "line_start": 1,
+      "line_end": 38,
+      "summary": "Source file, 38 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/LRMTransformer1D.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/LRMTransformer1D.swift",
+      "line_start": 1,
+      "line_end": 67,
+      "summary": "Source file, 67 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/LRMBasicTransformerBlock.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/LRMBasicTransformerBlock.swift",
+      "line_start": 1,
+      "line_end": 70,
+      "summary": "Source file, 70 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/LRMAttention.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/LRMAttention.swift",
+      "line_start": 1,
+      "line_end": 75,
+      "summary": "Source file, 75 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/LRMFeedForward.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/LRMFeedForward.swift",
+      "line_start": 1,
+      "line_end": 30,
+      "summary": "Source file, 30 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/Triplane1DTokenizer.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/Triplane1DTokenizer.swift",
+      "line_start": 1,
+      "line_end": 31,
+      "summary": "Source file, 31 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/TriplaneUpsampleNetwork.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/TriplaneUpsampleNetwork.swift",
+      "line_start": 1,
+      "line_end": 41,
+      "summary": "Source file, 41 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/NeRFMLP.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/NeRFMLP.swift",
+      "line_start": 1,
+      "line_end": 39,
+      "summary": "Source file, 39 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Sources/TripoSRRuntime/TripoSRRenderer.swift",
+      "kind": "file",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/TripoSRRenderer.swift",
+      "line_start": 1,
+      "line_end": 127,
+      "summary": "Source file, 127 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Sources/TripoSRCLI/main.swift",
+      "kind": "file",
+      "target": "TripoSRCLI",
+      "file_path": "Sources/TripoSRCLI/main.swift",
+      "line_start": 1,
+      "line_end": 248,
+      "summary": "Source file, 248 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift",
+      "kind": "file",
+      "target": "TripoSRRuntimeTests",
+      "file_path": "Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift",
+      "line_start": 1,
+      "line_end": 119,
+      "summary": "Source file, 119 lines at verified_commit.",
+      "anchor": "import Foundation"
+    },
+    {
+      "id": "file.Tests/TripoSRRuntimeTests/TripoSRCLIExitTests.swift",
+      "kind": "file",
+      "target": "TripoSRRuntimeTests",
+      "file_path": "Tests/TripoSRRuntimeTests/TripoSRCLIExitTests.swift",
+      "line_start": 1,
+      "line_end": 87,
+      "summary": "Source file, 87 lines at verified_commit.",
+      "anchor": "import Darwin"
+    },
+    {
+      "id": "type.TripoSRModel",
+      "kind": "class",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
+      "line_start": 5,
+      "line_end": 93,
+      "summary": "Orchestrates DINO, triplane tokens, LRM, upsample, NeRF query.",
+      "anchor": "public class TripoSRModel"
+    },
+    {
+      "id": "method.TripoSRModel.init",
+      "kind": "initializer",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
+      "line_start": 14,
+      "line_end": 41,
+      "summary": "Builds the default modules: DINO 224/patch 16, triplane 32x1024, LRM 16 layers, upsample to 40 channels, NeRF 120-64-9, renderer radius 0.87.",
+      "anchor": "public override init()",
+      "tensor_signature": {
+        "default_triplanes": "[B, 3, 64, 64, 40]"
+      }
+    },
+    {
+      "id": "method.TripoSRModel.loadWeights",
+      "kind": "method",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
+      "line_start": 44,
+      "line_end": 51,
+      "summary": "Loads safetensors and updates parameters with shapeMismatch and noUnusedKeys.",
+      "anchor": "func loadWeights"
+    },
+    {
+      "id": "method.TripoSRModel.preprocessImage",
+      "kind": "method",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
+      "line_start": 57,
+      "line_end": 62,
+      "summary": "Subtracts ImageNet mean and divides by ImageNet std. NHWC.",
+      "anchor": "func preprocessImage",
+      "tensor_signature": {
+        "input": "[B, H, W, 3]",
+        "output": "[B, H, W, 3]"
+      }
+    },
+    {
+      "id": "method.TripoSRModel.forwardTriplanes",
+      "kind": "method",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
+      "line_start": 67,
+      "line_end": 87,
+      "summary": "Image to triplanes. Skips ImageNet norm when alreadyNormalized is true.",
+      "anchor": "func forwardTriplanes",
+      "tensor_signature": {
+        "input": "[B, H, W, 3] float RGB in [0, 1]",
+        "output": "[B, 3, 64, 64, 40] for the default module sizes"
+      }
+    },
+    {
+      "id": "method.TripoSRModel.evaluate",
+      "kind": "method",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
+      "line_start": 90,
+      "line_end": 92,
+      "summary": "Delegates to TripoSRRenderer.queryTriplane. Returns density and color, not a mesh.",
+      "anchor": "func evaluate",
+      "tensor_signature": {
+        "positions": "[B, N, 3]",
+        "density": "[B, N, 1]",
+        "color": "[B, N, 3]"
+      }
+    },
+    {
+      "id": "type.DINOv2Model",
+      "kind": "class",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/DINOv2Model.swift",
+      "line_start": 5,
+      "line_end": 130,
+      "summary": "DINO ViT image tokenizer. Default construction in TripoSRModel uses depth 12, embed 768, 12 heads, patch 16, imgSize 224.",
+      "anchor": "public class DINOv2Model",
+      "tensor_signature": {
+        "output": "[B, numPatches+1, 768]"
+      }
+    },
+    {
+      "id": "method.DINOv2Model.callAsFunction",
+      "kind": "method",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/DINOv2Model.swift",
+      "line_start": 36,
+      "line_end": 64,
+      "summary": "Patch embed, CLS, interpolated position add, 12 blocks, final norm.",
+      "anchor": "public func callAsFunction"
+    },
+    {
+      "id": "method.DINOv2Model.interpolatePosEmbed",
+      "kind": "method",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/DINOv2Model.swift",
+      "line_start": 67,
+      "line_end": 129,
+      "summary": "Manual bilinear resize of patch position embeddings. Comment on line 66 says bicubic-ish bilinear.",
+      "anchor": "func interpolatePosEmbed"
+    },
+    {
+      "id": "type.DINOv2PatchEmbed",
+      "kind": "class",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/DINOv2PatchEmbed.swift",
+      "line_start": 5,
+      "line_end": 38,
+      "summary": "Conv2d patch embed. Default patch 14 in this type; TripoSRModel passes patchSize 16.",
+      "anchor": "public class DINOv2PatchEmbed"
+    },
+    {
+      "id": "type.DINOv2Layer",
+      "kind": "class",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/DINOv2Layer.swift",
+      "line_start": 5,
+      "line_end": 48,
+      "summary": "Pre-norm attention and MLP residual block. layerScaleInitValue defaults to nil.",
+      "anchor": "public class DINOv2Layer"
+    },
+    {
+      "id": "type.DINOv2Attention",
+      "kind": "class",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/DINOv2Attention.swift",
+      "line_start": 5,
+      "line_end": 54,
+      "summary": "Fused QKV attention via MLXFast.scaledDotProductAttention.",
+      "anchor": "public class DINOv2Attention"
+    },
+    {
+      "id": "type.DINOv2MLP",
+      "kind": "class",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/DINOv2MLP.swift",
+      "line_start": 5,
+      "line_end": 20,
+      "summary": "Two-linears with GELU.",
+      "anchor": "public class DINOv2MLP"
+    },
+    {
+      "id": "type.Triplane1DTokenizer",
+      "kind": "class",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/Triplane1DTokenizer.swift",
+      "line_start": 5,
+      "line_end": 31,
+      "summary": "Learnable triplane tokens. Default plane 32, channels 1024.",
+      "anchor": "public class Triplane1DTokenizer",
+      "tensor_signature": {
+        "embeddings": "[3, 32, 32, 1024]",
+        "tokens": "[B, 3072, 1024]"
+      }
+    },
+    {
+      "id": "method.Triplane1DTokenizer.callAsFunction",
+      "kind": "method",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/Triplane1DTokenizer.swift",
+      "line_start": 17,
+      "line_end": 24,
+      "summary": "Broadcasts embeddings to a batch and flattens planes.",
+      "anchor": "func callAsFunction"
+    },
+    {
+      "id": "method.Triplane1DTokenizer.detokenize",
+      "kind": "method",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/Triplane1DTokenizer.swift",
+      "line_start": 26,
+      "line_end": 30,
+      "summary": "Reshapes tokens back to three planes.",
+      "anchor": "func detokenize",
+      "tensor_signature": {
+        "input": "[B, 3*H*W, C]",
+        "output": "[B, 3, H, W, C]"
+      }
+    },
+    {
+      "id": "type.LRMTransformer1D",
+      "kind": "class",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/LRMTransformer1D.swift",
+      "line_start": 5,
+      "line_end": 67,
+      "summary": "16-layer LRM backbone. GroupNorm is pytorchCompatible. Evals after every block.",
+      "anchor": "public class LRMTransformer1D",
+      "tensor_signature": {
+        "hidden": "[B, 3072, 1024]",
+        "encoder": "[B, seq, 768]"
+      }
+    },
+    {
+      "id": "type.LRMBasicTransformerBlock",
+      "kind": "class",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/LRMBasicTransformerBlock.swift",
+      "line_start": 5,
+      "line_end": 70,
+      "summary": "Self-attention, optional cross-attention, GEGLU feed-forward.",
+      "anchor": "public class LRMBasicTransformerBlock"
+    },
+    {
+      "id": "type.LRMAttention",
+      "kind": "class",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/LRMAttention.swift",
+      "line_start": 5,
+      "line_end": 75,
+      "summary": "Separate Q, K, V projections and scaled dot-product attention.",
+      "anchor": "public class LRMAttention"
+    },
+    {
+      "id": "type.LRMFeedForward",
+      "kind": "class",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/LRMFeedForward.swift",
+      "line_start": 5,
+      "line_end": 30,
+      "summary": "GEGLU feed-forward. proj1 writes innerDim*2.",
+      "anchor": "public class LRMFeedForward"
+    },
+    {
+      "id": "type.TriplaneUpsampleNetwork",
+      "kind": "class",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/TriplaneUpsampleNetwork.swift",
+      "line_start": 5,
+      "line_end": 41,
+      "summary": "ConvTranspose2d over the three planes. Default 1024 to 40 channels, spatial size doubles.",
+      "anchor": "public class TriplaneUpsampleNetwork",
+      "tensor_signature": {
+        "input": "[B, 3, 32, 32, 1024]",
+        "output": "[B, 3, 64, 64, 40]"
+      }
+    },
+    {
+      "id": "type.NeRFMLP",
+      "kind": "class",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/NeRFMLP.swift",
+      "line_start": 5,
+      "line_end": 39,
+      "summary": "MLP from 120 features to 4 outputs (density logit plus RGB). SiLU hidden activations. No 8192 batching.",
+      "anchor": "public class NeRFMLP",
+      "tensor_signature": {
+        "input": "[B, N, 120]",
+        "output": "[B, N, 4]"
+      }
+    },
+    {
+      "id": "type.TripoSRRenderer",
+      "kind": "class",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/TripoSRRenderer.swift",
+      "line_start": 5,
+      "line_end": 127,
+      "summary": "Samples three planes and runs the NeRF MLP. Default radius 0.87.",
+      "anchor": "public class TripoSRRenderer"
+    },
+    {
+      "id": "method.TripoSRRenderer.gridSampleBilinear",
+      "kind": "method",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/TripoSRRenderer.swift",
+      "line_start": 16,
+      "line_end": 82,
+      "summary": "Bilinear sample with align_corners false and zero padding for out-of-range samples.",
+      "anchor": "func gridSampleBilinear"
+    },
+    {
+      "id": "method.TripoSRRenderer.queryTriplane",
+      "kind": "method",
+      "target": "TripoSRRuntime",
+      "file_path": "Sources/TripoSRRuntime/TripoSRRenderer.swift",
+      "line_start": 84,
+      "line_end": 126,
+      "summary": "Projects positions, samples XY/XZ/YZ, concatenates 120 channels, applies trunc_exp density and sigmoid color. One call for the whole positions tensor.",
+      "anchor": "func queryTriplane",
+      "tensor_signature": {
+        "positions": "[B, N, 3] or [N, 3]",
+        "density": "[B, N, 1]",
+        "color": "[B, N, 3]"
+      }
+    },
+    {
+      "id": "type.CLIError",
+      "kind": "enum",
+      "target": "TripoSRCLI",
+      "file_path": "Sources/TripoSRCLI/main.swift",
+      "line_start": 83,
+      "line_end": 92,
+      "summary": "Smoke failure when weights are not found.",
+      "anchor": "enum CLIError"
+    },
+    {
+      "id": "method.resolveWeights",
+      "kind": "function",
+      "target": "TripoSRCLI",
+      "file_path": "Sources/TripoSRCLI/main.swift",
+      "line_start": 94,
+      "line_end": 109,
+      "summary": "Weight search order: TRIPOSR_WEIGHTS_PATH, then five relative paths.",
+      "anchor": "func resolveWeights"
+    },
+    {
+      "id": "method.runParityDump",
+      "kind": "function",
+      "target": "TripoSRCLI",
+      "file_path": "Sources/TripoSRCLI/main.swift",
+      "line_start": 127,
+      "line_end": 205,
+      "summary": "--parity path. CPU device, 256 MiB cache. Returns without throwing if npy inputs or weights are missing.",
+      "anchor": "func runParityDump"
+    },
+    {
+      "id": "method.runSmoke",
+      "kind": "function",
+      "target": "TripoSRCLI",
+      "file_path": "Sources/TripoSRCLI/main.swift",
+      "line_start": 207,
+      "line_end": 231,
+      "summary": "Smoke path. Throws CLIError.weightsNotFound before building the model. Sets cache limit to 512 MiB. Batch-1 random 512 image and 1000 points.",
+      "anchor": "func runSmoke",
+      "tensor_signature": {
+        "image": "[1, 512, 512, 3]",
+        "positions": "[1, 1000, 3]"
+      }
+    },
+    {
+      "id": "method.main",
+      "kind": "function",
+      "target": "TripoSRCLI",
+      "file_path": "Sources/TripoSRCLI/main.swift",
+      "line_start": 233,
+      "line_end": 240,
+      "summary": "--parity selects runParityDump. Any other argv runs runSmoke.",
+      "anchor": "func main"
+    },
+    {
+      "id": "method.cli.catch",
+      "kind": "function",
+      "target": "TripoSRCLI",
+      "file_path": "Sources/TripoSRCLI/main.swift",
+      "line_start": 242,
+      "line_end": 247,
+      "summary": "Writes Failed: to stderr and exits 1 for thrown errors, including missing smoke weights.",
+      "anchor": "Failed:"
+    },
+    {
+      "id": "type.TripoSRRuntimeTests",
+      "kind": "struct",
+      "target": "TripoSRRuntimeTests",
+      "file_path": "Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift",
+      "line_start": 34,
+      "line_end": 119,
+      "summary": "Unit tests. init sets the MLX default device to CPU.",
+      "anchor": "struct TripoSRRuntimeTests"
+    },
+    {
+      "id": "method.tripoSRPublishedWeightsURL",
+      "kind": "function",
+      "target": "TripoSRRuntimeTests",
+      "file_path": "Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift",
+      "line_start": 9,
+      "line_end": 26,
+      "summary": "Reads TRIPOSR_WEIGHTS_PATH, then two relative safetensors paths. Does not read a TEST_RUNNER_ name.",
+      "anchor": "func tripoSRPublishedWeightsURL"
+    },
+    {
+      "id": "method.loadWeightsFromPublishedFileWhenPresent",
+      "kind": "test",
+      "target": "TripoSRRuntimeTests",
+      "file_path": "Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift",
+      "line_start": 108,
+      "line_end": 118,
+      "summary": "Skipped when the safetensors file is absent. When present, only calls loadWeights. No forward pass.",
+      "anchor": "@Test("
+    },
+    {
+      "id": "type.TripoSRCLIExitTests",
+      "kind": "struct",
+      "target": "TripoSRRuntimeTests",
+      "file_path": "Tests/TripoSRRuntimeTests/TripoSRCLIExitTests.swift",
+      "line_start": 33,
+      "line_end": 87,
+      "summary": "Launches the built TripoSRCLI with no weights and expects a nonzero exit.",
+      "anchor": "struct TripoSRCLIExitTests"
+    },
+    {
+      "id": "method.smokeExitsNonzeroWhenWeightsAreMissing",
+      "kind": "test",
+      "target": "TripoSRRuntimeTests",
+      "file_path": "Tests/TripoSRRuntimeTests/TripoSRCLIExitTests.swift",
+      "line_start": 34,
+      "line_end": 86,
+      "summary": "Clears TRIPOSR_WEIGHTS_PATH and runs the CLI in an empty directory.",
+      "anchor": "func smokeExitsNonzeroWhenWeightsAreMissing"
+    }
+  ],
+  "edges": [
+    {
+      "from": "target.TripoSRCLI",
+      "to": "target.TripoSRRuntime",
+      "kind": "depends_on"
+    },
+    {
+      "from": "target.TripoSRRuntimeTests",
+      "to": "target.TripoSRRuntime",
+      "kind": "depends_on"
+    },
+    {
+      "from": "target.TripoSRRuntimeTests",
+      "to": "target.TripoSRCLI",
+      "kind": "depends_on"
+    },
+    {
+      "from": "type.TripoSRModel",
+      "to": "type.DINOv2Model",
+      "kind": "instantiates"
+    },
+    {
+      "from": "type.TripoSRModel",
+      "to": "type.Triplane1DTokenizer",
+      "kind": "instantiates"
+    },
+    {
+      "from": "type.TripoSRModel",
+      "to": "type.LRMTransformer1D",
+      "kind": "instantiates"
+    },
+    {
+      "from": "type.TripoSRModel",
+      "to": "type.TriplaneUpsampleNetwork",
+      "kind": "instantiates"
+    },
+    {
+      "from": "type.TripoSRModel",
+      "to": "type.NeRFMLP",
+      "kind": "instantiates"
+    },
+    {
+      "from": "type.TripoSRModel",
+      "to": "type.TripoSRRenderer",
+      "kind": "instantiates"
+    },
+    {
+      "from": "method.TripoSRModel.forwardTriplanes",
+      "to": "method.TripoSRModel.preprocessImage",
+      "kind": "calls"
+    },
+    {
+      "from": "method.TripoSRModel.forwardTriplanes",
+      "to": "method.DINOv2Model.callAsFunction",
+      "kind": "calls"
+    },
+    {
+      "from": "method.TripoSRModel.forwardTriplanes",
+      "to": "method.Triplane1DTokenizer.callAsFunction",
+      "kind": "calls"
+    },
+    {
+      "from": "method.TripoSRModel.forwardTriplanes",
+      "to": "type.LRMTransformer1D",
+      "kind": "calls"
+    },
+    {
+      "from": "method.TripoSRModel.forwardTriplanes",
+      "to": "method.Triplane1DTokenizer.detokenize",
+      "kind": "calls"
+    },
+    {
+      "from": "method.TripoSRModel.forwardTriplanes",
+      "to": "type.TriplaneUpsampleNetwork",
+      "kind": "calls"
+    },
+    {
+      "from": "method.TripoSRModel.evaluate",
+      "to": "method.TripoSRRenderer.queryTriplane",
+      "kind": "calls"
+    },
+    {
+      "from": "method.TripoSRRenderer.queryTriplane",
+      "to": "method.TripoSRRenderer.gridSampleBilinear",
+      "kind": "calls"
+    },
+    {
+      "from": "method.TripoSRRenderer.queryTriplane",
+      "to": "type.NeRFMLP",
+      "kind": "calls"
+    },
+    {
+      "from": "method.DINOv2Model.callAsFunction",
+      "to": "method.DINOv2Model.interpolatePosEmbed",
+      "kind": "calls"
+    },
+    {
+      "from": "method.main",
+      "to": "method.runParityDump",
+      "kind": "calls"
+    },
+    {
+      "from": "method.main",
+      "to": "method.runSmoke",
+      "kind": "calls"
+    },
+    {
+      "from": "method.runSmoke",
+      "to": "method.resolveWeights",
+      "kind": "calls"
+    },
+    {
+      "from": "method.runParityDump",
+      "to": "method.resolveWeights",
+      "kind": "calls"
+    },
+    {
+      "from": "method.TripoSRModel.preprocessImage",
+      "to": "method.TripoSRModel.preprocessImage",
+      "kind": "transforms_tensor",
+      "input_shape": "[B, H, W, 3]",
+      "output_shape": "[B, H, W, 3]"
+    },
+    {
+      "from": "method.DINOv2Model.callAsFunction",
+      "to": "method.DINOv2Model.callAsFunction",
+      "kind": "transforms_tensor",
+      "input_shape": "[B, H, W, 3]",
+      "output_shape": "[B, numPatches+1, 768]"
+    },
+    {
+      "from": "method.Triplane1DTokenizer.callAsFunction",
+      "to": "method.Triplane1DTokenizer.callAsFunction",
+      "kind": "transforms_tensor",
+      "input_shape": "batchSize",
+      "output_shape": "[B, 3072, 1024]"
+    },
+    {
+      "from": "method.Triplane1DTokenizer.detokenize",
+      "to": "method.Triplane1DTokenizer.detokenize",
+      "kind": "transforms_tensor",
+      "input_shape": "[B, 3072, 1024]",
+      "output_shape": "[B, 3, 32, 32, 1024]"
+    },
+    {
+      "from": "type.TriplaneUpsampleNetwork",
+      "to": "type.TriplaneUpsampleNetwork",
+      "kind": "transforms_tensor",
+      "input_shape": "[B, 3, 32, 32, 1024]",
+      "output_shape": "[B, 3, 64, 64, 40]"
+    },
+    {
+      "from": "method.TripoSRRenderer.queryTriplane",
+      "to": "method.TripoSRRenderer.queryTriplane",
+      "kind": "transforms_tensor",
+      "input_shape": "triplanes [B, 3, 64, 64, 40], positions [B, N, 3]",
+      "output_shape": "density [B, N, 1], color [B, N, 3]"
+    },
+    {
+      "from": "method.loadWeightsFromPublishedFileWhenPresent",
+      "to": "method.TripoSRModel.loadWeights",
+      "kind": "tested_by"
+    },
+    {
+      "from": "method.smokeExitsNonzeroWhenWeightsAreMissing",
+      "to": "method.runSmoke",
+      "kind": "tested_by"
+    },
+    {
+      "from": "type.TripoSRRuntimeTests",
+      "to": "method.TripoSRModel.preprocessImage",
+      "kind": "tested_by"
+    },
+    {
+      "from": "type.TripoSRRuntimeTests",
+      "to": "type.Triplane1DTokenizer",
+      "kind": "tested_by"
+    },
+    {
+      "from": "type.TripoSRRuntimeTests",
+      "to": "method.TripoSRRenderer.queryTriplane",
+      "kind": "tested_by"
+    }
+  ]
+}

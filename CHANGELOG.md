@@ -17,6 +17,9 @@ version tag yet.
 - Weight-loading test that skips when `triposr_swift_ready.safetensors`
   is not on disk.
 - GitHub Actions workflow that builds and tests on macOS with `xcodebuild`.
+- `AGENTS.md`, `docs/engineering_standards.md`, `docs/knowledge-graph.json`,
+  `docs/knowledge-graph.md`, and `docs/wiki/` as a commit-checked map of the
+  sources. `scripts/verify_docs.py` checks the citations.
 - Swift Package Index manifest (`.spi.yml`).
 
 ### Changed
