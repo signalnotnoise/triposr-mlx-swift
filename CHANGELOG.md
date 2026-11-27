@@ -2,8 +2,8 @@
 
 All notable changes to this package are documented in this file.
 
-The format is based on Keep a Changelog, and this package does not have a
-version tag yet.
+The format is based on Keep a Changelog. The package is tagged
+v0.1.0.
 
 ## [Unreleased]
 
@@ -24,6 +24,7 @@ version tag yet.
 
 ### Changed
 
+- Install docs use `.package(..., from: "0.1.0")` instead of branch `main`.
 - `mlx-swift` is constrained to `0.31.3..<0.31.5`. The source manifest
   allowed `0.29.1` and newer, and its lockfile selected `0.31.3`.
   `mlx-swift` 0.31.5 and later require Swift tools 6.3.

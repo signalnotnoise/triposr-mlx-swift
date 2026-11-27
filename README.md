@@ -2,7 +2,7 @@
 
 ## Install
 
-There is no version tag yet. Depend on the `main` branch. The package identity is the repository name. You need read access to this repository.
+This package is tagged v0.1.0. The package identity is the repository name.
 
 ```swift
 // swift-tools-version: 6.2
@@ -16,7 +16,7 @@ let package = Package(
         .visionOS(.v1),
     ],
     dependencies: [
-        .package(url: "https://github.com/signalnotnoise/triposr-mlx-swift.git", branch: "main"),
+        .package(url: "https://github.com/signalnotnoise/triposr-mlx-swift.git", from: "0.1.0"),
     ],
     targets: [
         .target(
