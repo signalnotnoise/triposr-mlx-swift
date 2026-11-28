@@ -4,7 +4,7 @@ Ranges are checked by content hash, not by commit ancestry. Standards: [engineer
 
 ## What loadWeights checks
 
-`loadWeights(from:)` (`Sources/TripoSRRuntime/TripoSRModel.swift:44-51`) reads the safetensors file with `loadArrays` and calls `update` with `verify: [.shapeMismatch, .noUnusedKeys]`. A missing file throws. The missing-file test is `Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift:96-102`.
+`loadWeights(from:)` (`Sources/TripoSRRuntime/TripoSRModel.swift#TripoSRModel.loadWeights`) reads the safetensors file with `loadArrays` and calls `update` with `verify: [.shapeMismatch, .noUnusedKeys]`. A missing file throws. The missing-file test is `Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift#TripoSRRuntimeTests.loadWeightsRejectsMissingFile`.
 
 There is no key-renaming table in this repository. The file must already use Swift module parameter names. The Python remap script that produced `triposr_swift_ready.safetensors` is not checked in here.
 
@@ -28,7 +28,7 @@ echo "83563625f39180f505a3ccb855e67b59b65989f6545015672465d7487c4bc2cb  triposr_
 
 ## CLI search order
 
-`resolveWeights` (`Sources/TripoSRCLI/main.swift:97-112`):
+`resolveWeights` (`Sources/TripoSRCLI/main.swift#resolveWeights`):
 
 1. `TRIPOSR_WEIGHTS_PATH`
 2. `./triposr_swift_ready.safetensors`
@@ -37,13 +37,13 @@ echo "83563625f39180f505a3ccb855e67b59b65989f6545015672465d7487c4bc2cb  triposr_
 5. `TripoSR/triposr_weights/triposr_swift_ready.safetensors`
 6. `../../TripoSR/triposr_weights/triposr_swift_ready.safetensors`
 
-Smoke throws before model construction when none exist (`Sources/TripoSRCLI/main.swift:199-201`) and the top-level catch exits 1 (`Sources/TripoSRCLI/main.swift:234-240`). The test is `Tests/TripoSRRuntimeTests/TripoSRCLIExitTests.swift:87-98`.
+Smoke throws before model construction when none exist (`Sources/TripoSRCLI/main.swift:199-201`) and the top-level catch exits 1 (`Sources/TripoSRCLI/main.swift:234-240`). The test is `Tests/TripoSRRuntimeTests/TripoSRCLIExitTests.swift#TripoSRCLIExitTests.smokeExitsNonzeroWhenWeightsAreMissing`.
 
 ## --parity
 
-`main` selects `runParityDump` when argv contains `--parity` (`Sources/TripoSRCLI/main.swift:225-228`). The function is `Sources/TripoSRCLI/main.swift:128-197`.
+`main` selects `runParityDump` when argv contains `--parity` (`Sources/TripoSRCLI/main.swift:225-228`). The function is `Sources/TripoSRCLI/main.swift#runParityDump`.
 
-It forces CPU (`Sources/TripoSRCLI/main.swift:130`) and sets the cache limit to 256 MiB (`Sources/TripoSRCLI/main.swift:131`). It looks for `image.npy` and `positions.npy` under `resolveParityDir` (`Sources/TripoSRCLI/main.swift:114-126` and `Sources/TripoSRCLI/main.swift:137-138`). If no parity directory exists yet, that path is `parity/` in the working directory.
+It forces CPU (`Sources/TripoSRCLI/main.swift:130`) and sets the cache limit to 256 MiB (`Sources/TripoSRCLI/main.swift:131`). It looks for `image.npy` and `positions.npy` under `resolveParityDir` (`Sources/TripoSRCLI/main.swift#resolveParityDir` and `Sources/TripoSRCLI/main.swift:137-138`). If no parity directory exists yet, that path is `parity/` in the working directory.
 
 If either `.npy` file is missing, it throws and the message names the directory where `image.npy` and `positions.npy` must be supplied (`Sources/TripoSRCLI/main.swift:139-142`). If the weights are missing, it throws `CLIError.weightsNotFound` before the model is built (`Sources/TripoSRCLI/main.swift:143-145`). The catch prints `Failed:` and exits 1 (`Sources/TripoSRCLI/main.swift:234-240`). This repository does not ship a script that generates those inputs.
 
@@ -51,4 +51,4 @@ If either `.npy` file is missing, it throws and the message names the directory 
 
 The optional weights unit test only calls `loadWeights` and does not run a forward or `--parity` (`Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift:104-118`).
 
-Bilinear position resize, which `--parity` is meant to compare, is `Sources/TripoSRRuntime/DINOv2Model.swift:67-129`. The implementation is bilinear (`Sources/TripoSRRuntime/DINOv2Model.swift:99-126`). Line 66 of that file says "bicubic-ish bilinear". `README.md:150` says the Hugging Face ViT uses bicubic. This tree has no bicubic path.
+Bilinear position resize, which `--parity` is meant to compare, is `Sources/TripoSRRuntime/DINOv2Model.swift#DINOv2Model.interpolatePosEmbed`. The implementation is bilinear (`Sources/TripoSRRuntime/DINOv2Model.swift:99-126`). Line 66 of that file says "bicubic-ish bilinear". `README.md:150` says the Hugging Face ViT uses bicubic. This tree has no bicubic path.
