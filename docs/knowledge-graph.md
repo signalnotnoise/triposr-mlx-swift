@@ -24,24 +24,24 @@ flowchart TD
   tok --> lrm --> detok --> up --> qry --> mlp --> out
 ```
 
-`forwardTriplanes` is `Sources/TripoSRRuntime/TripoSRModel.swift:67-87`. `evaluate` is `Sources/TripoSRRuntime/TripoSRModel.swift:90-92`. The CLI smoke batch is 1 (`Sources/TripoSRCLI/main.swift:211`).
+`forwardTriplanes` is `Sources/TripoSRRuntime/TripoSRModel.swift#TripoSRModel.forwardTriplanes`. `evaluate` is `Sources/TripoSRRuntime/TripoSRModel.swift#TripoSRModel.evaluate`. The CLI smoke batch is 1 (`Sources/TripoSRCLI/main.swift:211`).
 
 ## Where to find things
 
 | Task | Location |
 | --- | --- |
-| Weight load and shape or unused-key checks | `Sources/TripoSRRuntime/TripoSRModel.swift:44-51` |
+| Weight load and shape or unused-key checks | `Sources/TripoSRRuntime/TripoSRModel.swift#TripoSRModel.loadWeights` |
 | ImageNet mean, std, and preprocess | `Sources/TripoSRRuntime/TripoSRModel.swift:53-62` |
 | DINO forward and bilinear position resize | `Sources/TripoSRRuntime/DINOv2Model.swift:36-129` |
-| Image to triplanes | `Sources/TripoSRRuntime/TripoSRModel.swift:67-87` |
-| Triplane sample | `Sources/TripoSRRuntime/TripoSRRenderer.swift:84-126` |
-| NeRF MLP | `Sources/TripoSRRuntime/NeRFMLP.swift:5-39` |
+| Image to triplanes | `Sources/TripoSRRuntime/TripoSRModel.swift#TripoSRModel.forwardTriplanes` |
+| Triplane sample | `Sources/TripoSRRuntime/TripoSRRenderer.swift#TripoSRRenderer.queryTriplane` |
+| NeRF MLP | `Sources/TripoSRRuntime/NeRFMLP.swift#NeRFMLP` |
 | CLI entry and `--parity` | `Sources/TripoSRCLI/main.swift:225-240` |
-| Weight search order | `Sources/TripoSRCLI/main.swift:97-112` |
-| Parity dump; missing npy or weights throw | `Sources/TripoSRCLI/main.swift:128-197` |
-| Smoke, 512 MiB cache, nonzero missing-weights exit | `Sources/TripoSRCLI/main.swift:199-223` |
+| Weight search order | `Sources/TripoSRCLI/main.swift#resolveWeights` |
+| Parity dump; missing npy or weights throw | `Sources/TripoSRCLI/main.swift#runParityDump` |
+| Smoke, 512 MiB cache, nonzero missing-weights exit | `Sources/TripoSRCLI/main.swift#runSmoke` |
 | Published-weights test, load only | `Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift:108-118` |
-| Env var the test actually reads | `Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift:9-26` |
+| Env var the test actually reads | `Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift#tripoSRPublishedWeightsURL` |
 | CLI nonzero-exit test | `Tests/TripoSRRuntimeTests/TripoSRCLIExitTests.swift:34-86` |
 | Package manifest | `Package.swift:1-46` |
 | macOS CI | `.github/workflows/ci.yml:16-58` |

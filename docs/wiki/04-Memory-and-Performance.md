@@ -8,7 +8,7 @@ The numbers below are copied from the README record of one M3 Max run. This page
 | --- | --- | --- |
 | `runSmoke` | `512 * 1024 * 1024` (512 MiB) | `Sources/TripoSRCLI/main.swift:203` |
 | `runParityDump` | `256 * 1024 * 1024` (256 MiB) | `Sources/TripoSRCLI/main.swift:131` |
-| Library modules | not set | `Sources/TripoSRRuntime/TripoSRModel.swift:14-41` |
+| Library modules | not set | `Sources/TripoSRRuntime/TripoSRModel.swift#TripoSRModel.init` |
 
 The 512 MiB value is the smoke command only. `--parity` uses 256 MiB.
 
@@ -16,7 +16,7 @@ The 512 MiB value is the smoke command only. `--parity` uses 256 MiB.
 
 ## What is not in the library
 
-`queryTriplane` (`Sources/TripoSRRuntime/TripoSRRenderer.swift:84-126`) runs the NeRF MLP on the positions it is given. There is no loop of 8192 points in `Sources/` or `Tests/`.
+`queryTriplane` (`Sources/TripoSRRuntime/TripoSRRenderer.swift#TripoSRRenderer.queryTriplane`) runs the NeRF MLP on the positions it is given. There is no loop of 8192 points in `Sources/` or `Tests/`.
 
 `README.md:131-138` records a harness outside this package: a 128^3 density grid, batches of 8192, then marching cubes and vertex colors. Those steps are not Swift sources here. The README says the harness left the default MLX cache limit, which read 36,721,970,380 bytes (`README.md:125`), rather than the CLI's 512 MiB.
 

@@ -10,7 +10,7 @@ mlx-swift is `0.31.3..<0.31.5` (`Package.swift:24-28`). 0.31.5 and later require
 
 ## Metal library
 
-Do not use `swift build` or `swift test` for this package. mlx-swift compiles Metal shaders and bundles `default.metallib` through Xcode. CPU tests still load that library. The runtime tests set `Device.setDefault(device: Device(.cpu))` in `init` (`Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift:36-39`).
+Do not use `swift build` or `swift test` for this package. mlx-swift compiles Metal shaders and bundles `default.metallib` through Xcode. CPU tests still load that library. The runtime tests set `Device.setDefault(device: Device(.cpu))` in `init` (`Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift#TripoSRRuntimeTests.init`).
 
 ```bash
 xcodebuild build -scheme TripoSRCLI -destination 'platform=macOS' -skipPackagePluginValidation CODE_SIGNING_ALLOWED=NO
@@ -27,9 +27,9 @@ A separate Ubuntu job runs `python3 scripts/verify_docs.py`. That check does not
 
 ## Tests and the weights env var
 
-`TripoSRRuntimeTests` (`Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift:34-119`) covers preprocess, tokenizer round-trip, renderer shapes, a missing weights file, and the optional published file.
+`TripoSRRuntimeTests` (`Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift#TripoSRRuntimeTests`) covers preprocess, tokenizer round-trip, renderer shapes, a missing weights file, and the optional published file.
 
-`tripoSRPublishedWeightsURL` reads `TRIPOSR_WEIGHTS_PATH`, then `triposr_swift_ready.safetensors` and `triposr_weights/triposr_swift_ready.safetensors` (`Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift:9-26`). It does not look up the string `TEST_RUNNER_TRIPOSR_WEIGHTS_PATH`.
+`tripoSRPublishedWeightsURL` reads `TRIPOSR_WEIGHTS_PATH`, then `triposr_swift_ready.safetensors` and `triposr_weights/triposr_swift_ready.safetensors` (`Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift#tripoSRPublishedWeightsURL`). It does not look up the string `TEST_RUNNER_TRIPOSR_WEIGHTS_PATH`.
 
 `README.md:119` records an `xcodebuild` observation: a shell `TRIPOSR_WEIGHTS_PATH` alone did not reach the test process, and the `TEST_RUNNER_` prefix did. To pass the path through `xcodebuild`, set `TEST_RUNNER_TRIPOSR_WEIGHTS_PATH`. The test process then sees `TRIPOSR_WEIGHTS_PATH`.
 

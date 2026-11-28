@@ -23,11 +23,11 @@
   "location_index": {
     "weight_loading_and_validation": {
       "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
-      "line_start": 44,
+      "line_start": 43,
       "line_end": 51,
       "anchor": "func loadWeights",
       "note": "verify shapeMismatch and noUnusedKeys",
-      "content_sha256": "b1ec561edd7d01e218909f851bba62747ed60315c5a465ea4214b28d7b5a2617"
+      "symbol": "TripoSRModel.loadWeights"
     },
     "image_preprocessing_and_normalization": {
       "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
@@ -47,11 +47,11 @@
     },
     "image_to_triplane_decoder": {
       "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
-      "line_start": 67,
+      "line_start": 64,
       "line_end": 87,
       "anchor": "func forwardTriplanes",
       "note": "DINO, tokens, LRM, detokenize, upsample. Not the NeRF MLP.",
-      "content_sha256": "53c38c251f5b348bfe1af12a6129e1209fb0b6d7310605da3a5417fc186d57b8"
+      "symbol": "TripoSRModel.forwardTriplanes"
     },
     "triplane_sampling_and_nerf_mlp": {
       "locations": [
@@ -60,14 +60,14 @@
           "line_start": 84,
           "line_end": 126,
           "anchor": "func queryTriplane",
-          "content_sha256": "7a511c11c8bd17b6ed9e3f55a9dcfc1f02e82a7724feb59420b61986422d84ee"
+          "symbol": "TripoSRRenderer.queryTriplane"
         },
         {
           "file_path": "Sources/TripoSRRuntime/NeRFMLP.swift",
           "line_start": 5,
           "line_end": 39,
           "anchor": "class NeRFMLP",
-          "content_sha256": "9fdcedb039984544b5031c5ba64a939df0f829bc513287d008edbe8f29d4a0b4"
+          "symbol": "NeRFMLP"
         }
       ]
     },
@@ -86,7 +86,7 @@
           "line_start": 97,
           "line_end": 112,
           "anchor": "func resolveWeights",
-          "content_sha256": "f1db6827b4955a9b737589e5d25d6921e2f4d6c437d12dfaebba3b9865ae03c8"
+          "symbol": "resolveWeights"
         },
         {
           "file_path": "Sources/TripoSRCLI/main.swift",
@@ -94,7 +94,7 @@
           "line_end": 197,
           "anchor": "func runParityDump",
           "note": "throws when npy inputs or weights are missing",
-          "content_sha256": "2762112fec75fda9ab52bc2b94a3d6b81bf7f00bc00d0781f0f569dd5241d5c5"
+          "symbol": "runParityDump"
         }
       ]
     },
@@ -102,10 +102,10 @@
       "locations": [
         {
           "file_path": "Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift",
-          "line_start": 9,
+          "line_start": 7,
           "line_end": 26,
           "anchor": "TRIPOSR_WEIGHTS_PATH",
-          "content_sha256": "55528cafc9238a187ec403ff4b6786e0772f7b062be8ef990e58508fc6d6c7d5"
+          "symbol": "tripoSRPublishedWeightsURL"
         },
         {
           "file_path": "Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift",
@@ -384,7 +384,7 @@
       "line_end": 93,
       "summary": "Orchestrates DINO, triplane tokens, LRM, upsample, NeRF query.",
       "anchor": "public class TripoSRModel",
-      "content_sha256": "b678a25235cff7849b8091046e795ad53830ef29c85c970b5e9ac25a1f718a3c"
+      "symbol": "TripoSRModel"
     },
     {
       "id": "method.TripoSRModel.init",
@@ -398,18 +398,18 @@
       "tensor_signature": {
         "default_triplanes": "[B, 3, 64, 64, 40]"
       },
-      "content_sha256": "638104f721832a809b9ce65b8ac1180625badc8d937bdfb45b53d71ce8cf49d2"
+      "symbol": "TripoSRModel.init"
     },
     {
       "id": "method.TripoSRModel.loadWeights",
       "kind": "method",
       "target": "TripoSRRuntime",
       "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
-      "line_start": 44,
+      "line_start": 43,
       "line_end": 51,
       "summary": "Loads safetensors and updates parameters with shapeMismatch and noUnusedKeys.",
       "anchor": "func loadWeights",
-      "content_sha256": "b1ec561edd7d01e218909f851bba62747ed60315c5a465ea4214b28d7b5a2617"
+      "symbol": "TripoSRModel.loadWeights"
     },
     {
       "id": "method.TripoSRModel.preprocessImage",
@@ -424,14 +424,14 @@
         "input": "[B, H, W, 3]",
         "output": "[B, H, W, 3]"
       },
-      "content_sha256": "8ff3fff06a07dec53195c94d990197773a1a3e75b142d6695978a94cab34063d"
+      "symbol": "TripoSRModel.preprocessImage"
     },
     {
       "id": "method.TripoSRModel.forwardTriplanes",
       "kind": "method",
       "target": "TripoSRRuntime",
       "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
-      "line_start": 67,
+      "line_start": 64,
       "line_end": 87,
       "summary": "Image to triplanes. Skips ImageNet norm when alreadyNormalized is true.",
       "anchor": "func forwardTriplanes",
@@ -439,14 +439,14 @@
         "input": "[B, H, W, 3] float RGB in [0, 1]",
         "output": "[B, 3, 64, 64, 40] for the default module sizes"
       },
-      "content_sha256": "53c38c251f5b348bfe1af12a6129e1209fb0b6d7310605da3a5417fc186d57b8"
+      "symbol": "TripoSRModel.forwardTriplanes"
     },
     {
       "id": "method.TripoSRModel.evaluate",
       "kind": "method",
       "target": "TripoSRRuntime",
       "file_path": "Sources/TripoSRRuntime/TripoSRModel.swift",
-      "line_start": 90,
+      "line_start": 89,
       "line_end": 92,
       "summary": "Delegates to TripoSRRenderer.queryTriplane. Returns density and color, not a mesh.",
       "anchor": "func evaluate",
@@ -455,7 +455,7 @@
         "density": "[B, N, 1]",
         "color": "[B, N, 3]"
       },
-      "content_sha256": "2eda768588f1fd1a4ed8a746e622c3d62c55529f905e934381c2bc207f860e05"
+      "symbol": "TripoSRModel.evaluate"
     },
     {
       "id": "type.DINOv2Model",
@@ -469,7 +469,7 @@
       "tensor_signature": {
         "output": "[B, numPatches+1, 768]"
       },
-      "content_sha256": "196ad4186bfce59c69b88682cf50330f515db4aa513177c078f3e9133388724f"
+      "symbol": "DINOv2Model"
     },
     {
       "id": "method.DINOv2Model.callAsFunction",
@@ -480,18 +480,18 @@
       "line_end": 64,
       "summary": "Patch embed, CLS, interpolated position add, 12 blocks, final norm.",
       "anchor": "public func callAsFunction",
-      "content_sha256": "ab3b33ede004d5e6ed7c9fce5f5b1eacdc07419abdf82c18e495c19918180c8b"
+      "symbol": "DINOv2Model.callAsFunction"
     },
     {
       "id": "method.DINOv2Model.interpolatePosEmbed",
       "kind": "method",
       "target": "TripoSRRuntime",
       "file_path": "Sources/TripoSRRuntime/DINOv2Model.swift",
-      "line_start": 67,
+      "line_start": 66,
       "line_end": 129,
       "summary": "Manual bilinear resize of patch position embeddings. Comment on line 66 says bicubic-ish bilinear.",
       "anchor": "func interpolatePosEmbed",
-      "content_sha256": "ed5540cbab365dd0e79a518793cb99edc4ff86cad1aef3c09eff9308ad2a3869"
+      "symbol": "DINOv2Model.interpolatePosEmbed"
     },
     {
       "id": "type.DINOv2PatchEmbed",
@@ -502,7 +502,7 @@
       "line_end": 38,
       "summary": "Conv2d patch embed. Default patch 14 in this type; TripoSRModel passes patchSize 16.",
       "anchor": "public class DINOv2PatchEmbed",
-      "content_sha256": "c0b696d12c5b928045045dfadfe7a1acf2120f2e6ecadd22abaeeff99f246358"
+      "symbol": "DINOv2PatchEmbed"
     },
     {
       "id": "type.DINOv2Layer",
@@ -513,7 +513,7 @@
       "line_end": 48,
       "summary": "Pre-norm attention and MLP residual block. layerScaleInitValue defaults to nil.",
       "anchor": "public class DINOv2Layer",
-      "content_sha256": "c51db2c32368eb3459251cd5dd136b48c2e763507e80e998c6ee32de240b5489"
+      "symbol": "DINOv2Layer"
     },
     {
       "id": "type.DINOv2Attention",
@@ -524,7 +524,7 @@
       "line_end": 54,
       "summary": "Fused QKV attention via MLXFast.scaledDotProductAttention.",
       "anchor": "public class DINOv2Attention",
-      "content_sha256": "d0d200849739da5cdc523a5b99f5cae35f0e512643b6eced9ee62d0c08d8e18f"
+      "symbol": "DINOv2Attention"
     },
     {
       "id": "type.DINOv2MLP",
@@ -535,7 +535,7 @@
       "line_end": 20,
       "summary": "Two-linears with GELU.",
       "anchor": "public class DINOv2MLP",
-      "content_sha256": "e3ccaeefe8249ce53f96788de932b7010842d4263bc2aae0319c8abdab53119d"
+      "symbol": "DINOv2MLP"
     },
     {
       "id": "type.Triplane1DTokenizer",
@@ -550,7 +550,7 @@
         "embeddings": "[3, 32, 32, 1024]",
         "tokens": "[B, 3072, 1024]"
       },
-      "content_sha256": "2d82a59705b94b6e1a2366915c66836348067ba6c379ee1608ab85aa0949db8b"
+      "symbol": "Triplane1DTokenizer"
     },
     {
       "id": "method.Triplane1DTokenizer.callAsFunction",
@@ -561,7 +561,7 @@
       "line_end": 24,
       "summary": "Broadcasts embeddings to a batch and flattens planes.",
       "anchor": "func callAsFunction",
-      "content_sha256": "db0d6eb6473236c7b492bac4c6ece4964b24e119d9400d2399679f8d8407f861"
+      "symbol": "Triplane1DTokenizer.callAsFunction"
     },
     {
       "id": "method.Triplane1DTokenizer.detokenize",
@@ -576,7 +576,7 @@
         "input": "[B, 3*H*W, C]",
         "output": "[B, 3, H, W, C]"
       },
-      "content_sha256": "6c11103218e1bca952970ec8566ca12b2a0aac29d079bfbee58f25ff43652064"
+      "symbol": "Triplane1DTokenizer.detokenize"
     },
     {
       "id": "type.LRMTransformer1D",
@@ -591,7 +591,7 @@
         "hidden": "[B, 3072, 1024]",
         "encoder": "[B, seq, 768]"
       },
-      "content_sha256": "df34c84eaddcfbc489ff20987759e6989dab2c3e81c92c058401bdaf9c325a97"
+      "symbol": "LRMTransformer1D"
     },
     {
       "id": "type.LRMBasicTransformerBlock",
@@ -602,7 +602,7 @@
       "line_end": 70,
       "summary": "Self-attention, optional cross-attention, GEGLU feed-forward.",
       "anchor": "public class LRMBasicTransformerBlock",
-      "content_sha256": "e6e67ce68916933a23fd96c8bba58b7865d90daaf5314e7c492f981578d23bce"
+      "symbol": "LRMBasicTransformerBlock"
     },
     {
       "id": "type.LRMAttention",
@@ -613,7 +613,7 @@
       "line_end": 75,
       "summary": "Separate Q, K, V projections and scaled dot-product attention.",
       "anchor": "public class LRMAttention",
-      "content_sha256": "d8b5b9beb532650d358487b45cda86da841c5b28031422ca7bd78f0745ca3661"
+      "symbol": "LRMAttention"
     },
     {
       "id": "type.LRMFeedForward",
@@ -624,7 +624,7 @@
       "line_end": 30,
       "summary": "GEGLU feed-forward. proj1 writes innerDim*2.",
       "anchor": "public class LRMFeedForward",
-      "content_sha256": "3e6e6d699e876f15f1d6907008fbd437b9e0d1562d744bd2c843a6b53a660d58"
+      "symbol": "LRMFeedForward"
     },
     {
       "id": "type.TriplaneUpsampleNetwork",
@@ -639,7 +639,7 @@
         "input": "[B, 3, 32, 32, 1024]",
         "output": "[B, 3, 64, 64, 40]"
       },
-      "content_sha256": "a0702f834a7cb741a20d6a073b9c94125d137745481f4df20ad8fea3572909b3"
+      "symbol": "TriplaneUpsampleNetwork"
     },
     {
       "id": "type.NeRFMLP",
@@ -654,7 +654,7 @@
         "input": "[B, N, 120]",
         "output": "[B, N, 4]"
       },
-      "content_sha256": "9fdcedb039984544b5031c5ba64a939df0f829bc513287d008edbe8f29d4a0b4"
+      "symbol": "NeRFMLP"
     },
     {
       "id": "type.TripoSRRenderer",
@@ -665,18 +665,18 @@
       "line_end": 127,
       "summary": "Samples three planes and runs the NeRF MLP. Default radius 0.87.",
       "anchor": "public class TripoSRRenderer",
-      "content_sha256": "bd0a1562fafe4d2506b5567d2af02536473f6a9f09e869442db9ff50b384da8f"
+      "symbol": "TripoSRRenderer"
     },
     {
       "id": "method.TripoSRRenderer.gridSampleBilinear",
       "kind": "method",
       "target": "TripoSRRuntime",
       "file_path": "Sources/TripoSRRuntime/TripoSRRenderer.swift",
-      "line_start": 16,
+      "line_start": 12,
       "line_end": 82,
       "summary": "Bilinear sample with align_corners false and zero padding for out-of-range samples.",
       "anchor": "func gridSampleBilinear",
-      "content_sha256": "2530dd0d6176ee2e093a0c69ffa6edfc7a2f5e9233cfefa53f9ef1f356cc432f"
+      "symbol": "TripoSRRenderer.gridSampleBilinear"
     },
     {
       "id": "method.TripoSRRenderer.queryTriplane",
@@ -692,7 +692,7 @@
         "density": "[B, N, 1]",
         "color": "[B, N, 3]"
       },
-      "content_sha256": "7a511c11c8bd17b6ed9e3f55a9dcfc1f02e82a7724feb59420b61986422d84ee"
+      "symbol": "TripoSRRenderer.queryTriplane"
     },
     {
       "id": "type.CLIError",
@@ -703,7 +703,7 @@
       "line_end": 95,
       "summary": "Smoke or parity failure when weights or parity npy inputs are not found.",
       "anchor": "enum CLIError",
-      "content_sha256": "b4cb572776585f0797ceec6e0766bb4241f3555cf6205e412b536926bd9ae4e8"
+      "symbol": "CLIError"
     },
     {
       "id": "method.resolveWeights",
@@ -714,7 +714,7 @@
       "line_end": 112,
       "summary": "Weight search order: TRIPOSR_WEIGHTS_PATH, then five relative paths.",
       "anchor": "func resolveWeights",
-      "content_sha256": "f1db6827b4955a9b737589e5d25d6921e2f4d6c437d12dfaebba3b9865ae03c8"
+      "symbol": "resolveWeights"
     },
     {
       "id": "method.runParityDump",
@@ -725,7 +725,7 @@
       "line_end": 197,
       "summary": "--parity path. CPU device, 256 MiB cache. Throws if image.npy, positions.npy, or weights are missing.",
       "anchor": "func runParityDump",
-      "content_sha256": "2762112fec75fda9ab52bc2b94a3d6b81bf7f00bc00d0781f0f569dd5241d5c5"
+      "symbol": "runParityDump"
     },
     {
       "id": "method.runSmoke",
@@ -740,7 +740,7 @@
         "image": "[1, 512, 512, 3]",
         "positions": "[1, 1000, 3]"
       },
-      "content_sha256": "0cc8fa1899ae2e1b82a69dcafe76d210982c66d43b2d811ab728241779affca9"
+      "symbol": "runSmoke"
     },
     {
       "id": "method.main",
@@ -751,7 +751,7 @@
       "line_end": 232,
       "summary": "--parity selects runParityDump. Any other argv runs runSmoke.",
       "anchor": "func main",
-      "content_sha256": "5e10929e68cdf2513c891fb51c0e291ec17766cacbaed138482b0feb4f27bd28"
+      "symbol": "main"
     },
     {
       "id": "method.cli.catch",
@@ -769,22 +769,22 @@
       "kind": "struct",
       "target": "TripoSRRuntimeTests",
       "file_path": "Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift",
-      "line_start": 34,
+      "line_start": 28,
       "line_end": 119,
       "summary": "Unit tests. init sets the MLX default device to CPU.",
       "anchor": "struct TripoSRRuntimeTests",
-      "content_sha256": "89884e5a8f9b15720e5ef94143008977251955b3e5a010b4e9f5a099e0498dc3"
+      "symbol": "TripoSRRuntimeTests"
     },
     {
       "id": "method.tripoSRPublishedWeightsURL",
       "kind": "function",
       "target": "TripoSRRuntimeTests",
       "file_path": "Tests/TripoSRRuntimeTests/TripoSRRuntimeTests.swift",
-      "line_start": 9,
+      "line_start": 7,
       "line_end": 26,
       "summary": "Reads TRIPOSR_WEIGHTS_PATH, then two relative safetensors paths. Does not read a TEST_RUNNER_ name.",
       "anchor": "func tripoSRPublishedWeightsURL",
-      "content_sha256": "55528cafc9238a187ec403ff4b6786e0772f7b062be8ef990e58508fc6d6c7d5"
+      "symbol": "tripoSRPublishedWeightsURL"
     },
     {
       "id": "method.loadWeightsFromPublishedFileWhenPresent",
@@ -806,7 +806,7 @@
       "line_end": 133,
       "summary": "Launches the built TripoSRCLI with no weights and expects a nonzero exit.",
       "anchor": "struct TripoSRCLIExitTests",
-      "content_sha256": "8ea34cf75ab9c2de2dbbf1ea86b55d9748bd855af1e7b2b1ec91d334df60f234"
+      "symbol": "TripoSRCLIExitTests"
     },
     {
       "id": "method.smokeExitsNonzeroWhenWeightsAreMissing",
@@ -817,7 +817,7 @@
       "line_end": 98,
       "summary": "Clears TRIPOSR_WEIGHTS_PATH and runs the CLI in an empty directory.",
       "anchor": "func smokeExitsNonzeroWhenWeightsAreMissing",
-      "content_sha256": "82e689be0f8fd0e1f38e3a7d069642565864e4987c2d18db80b3b36bfdd186b0"
+      "symbol": "TripoSRCLIExitTests.smokeExitsNonzeroWhenWeightsAreMissing"
     },
     {
       "id": "method.parityExitsNonzeroWhenInputsAreMissing",
@@ -828,7 +828,7 @@
       "line_end": 112,
       "summary": "Runs TripoSRCLI --parity with no npy files and expects a nonzero exit.",
       "anchor": "func parityExitsNonzeroWhenInputsAreMissing",
-      "content_sha256": "00f6e927bfdf21bb621daeaf527dd9b9785fb5e263480f53e8853ddaab14ed47"
+      "symbol": "TripoSRCLIExitTests.parityExitsNonzeroWhenInputsAreMissing"
     },
     {
       "id": "method.parityExitsNonzeroWhenWeightsAreMissing",
@@ -839,7 +839,7 @@
       "line_end": 132,
       "summary": "Runs TripoSRCLI --parity with empty npy files and no weights and expects a nonzero exit.",
       "anchor": "func parityExitsNonzeroWhenWeightsAreMissing",
-      "content_sha256": "6add9eac628b47e0ee7c43142b386279c943d3c2a2178f1184d62f23d6d0433f"
+      "symbol": "TripoSRCLIExitTests.parityExitsNonzeroWhenWeightsAreMissing"
     },
     {
       "id": "file.README.md.commands-and-record",
